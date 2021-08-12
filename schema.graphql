@@ -1,6 +1,59 @@
-type Gravatar @entity {
+enum AssetFeedType {
+  Price
+  Volume
+  Rank
+}
+
+enum Phase {
+  Trading
+  Waiting
+  Reporting
+  Disputed
+  ReadyToSettle
+  Settled
+}
+
+type Asset @entity {
   id: ID!
-  owner: Bytes!
-  displayName: String!
-  imageUrl: String!
+  assetFeed: String!
+  decimals: Int!
+  creator: Bytes!
+  assetFeedType: AssetFeedType!
+}
+
+type User @entity {
+  id: Bytes!
+  predictions: [MarketPrediction]! @derivedFrom(field: "user")
+}
+
+type MarketPrediction @entity {
+  id: ID!
+  user: User!
+  market: Market!
+  pool: Pool!
+  positions: BigInt!
+  amount: BigInt!
+  leverage: Int!
+  date: BigInt!
+}
+
+type Pool @entity {
+  id: ID!
+  upper: BigInt!
+  lower: BigInt!
+  staked: BigInt!
+  rewards: BigInt!
+  predictions: [MarketPrediction]! @derivedFrom(field: "pool")
+}
+
+type Market @entity {
+  id: ID!
+  phase: Phase!
+  asset: Asset!
+  duration: BigInt!
+  creationTime: BigInt!
+  liquidity: BigInt!
+  creator: Bytes!
+  pools: [Pool!]!
+  predictions: [MarketPrediction]! @derivedFrom(field: "market")
 }
