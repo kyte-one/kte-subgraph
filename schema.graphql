@@ -13,47 +13,275 @@ enum Phase {
   Settled
 }
 
-type Asset @entity {
+type Factory @entity {
+  # factory address
   id: ID!
-  assetFeed: String!
+  # Total markets created
+  totalMarkets: BigInt!
+  # total Predictions
+  totalPredictions: BigInt!
+  # Total market participants
+  totalParticipants: BigInt!
+  # Total participation
+  totalParticipation: BigInt!
+  # Total rewards distribute
+  totalRewardsDistributed: BigInt!
+  # Total markets in trading
+  totalMarketsInTrading: BigInt!
+  # Total markets in Waiting
+  totalMarketsInWaiting: BigInt!
+  # Total markets in Reporting
+  totalMarketsInReporting: BigInt!
+  # Total markets - ready to settle
+  totalMarketsReadyToSettled: BigInt!
+  # Total markets in disputes
+  totalMarketsInDispute: BigInt!
+  # Total markets settled
+  totalMarketsSettled: BigInt!
+  # current owner of the factory
+  owner: ID!
+  # Hourly factory snapshots
+  factoryHourData: [FactoryHourData!]! @derivedFrom(field: "factory")
+  # Daily factory snapshots
+  factoryDayData: [FactoryDayData!]! @derivedFrom(field: "factory")
+}
+
+type FactoryHourData @entity {
+  # asset id
+  id: ID!
+  # Factory pointer
+  factory: Factory!
+  # unix timestamp for start of hour
+  periodStartUnix: Int!
+  # Total participants
+  participants: Int!
+  # Total Participation
+  participation: BigInt!
+  # Total predictions
+  predictions: Int!
+}
+
+type FactoryDayData @entity {
+  # asset id
+  id: ID!
+  # Factory pointer
+  factory: Factory!
+  # timestamp rounded to current day by dividing by 86400
+  date: Int!
+  # Total participants
+  participants: Int!
+  # Total Participation
+  participation: BigInt!
+  # Total predictions
+  predictions: Int!
+}
+
+type Asset @entity {
+  # asset id
+  id: ID!
+  # Asset 0
+  asset0: String!
+  # Asset 1
+  asset1: String!
+  # Decimal place
   decimals: Int!
+  # Address of creator
   creator: Bytes!
+  # Asset feed type
   assetFeedType: AssetFeedType!
+  # Asset feed address
+  assetFeed: Bytes!
+
+   # Total markets created
+  totalMarkets: BigInt!
+  # total Predictions
+  totalPredictions: BigInt!
+  # Total market participants
+  totalParticipants: BigInt!
+  # Total participation
+  totalParticipation: BigInt!
+  # Total rewards distribute
+  totalRewardsDistributed: BigInt!
+
+  markets: [Market]! @derivedFrom(field: "asset")
+  # Hourly asset snapshots
+  assetHourData: [AssetHourData!]! @derivedFrom(field: "asset")
+  # Daily asset snapshots
+  assetDayData: [AssetDayData!]! @derivedFrom(field: "asset")
+}
+
+type AssetHourData @entity {
+  # asset id
+  id: ID!
+  # Asset pointer
+  asset: Asset!
+  # unix timestamp for start of hour
+  periodStartUnix: Int!
+  # Total participants
+  participants: Int!
+  # Total Participation
+  participation: BigInt!
+  # Total predictions
+  predictions: Int!
+}
+
+type AssetDayData @entity {
+  # asset id
+  id: ID!
+  # Asset pointer
+  asset: Asset!
+  # timestamp rounded to current day by dividing by 86400
+  date: Int!
+  # Total participants
+  participants: Int!
+  # Total Participation
+  participation: BigInt!
+  # Total predictions
+  predictions: Int!
 }
 
 type User @entity {
-  id: Bytes!
+  # user address
+  id: ID!
+  # Avatar
+  avatar: String
+  # user total market created
+  totalMarketCreated: BigInt!
+  # user total predictions
+  totalPredictions: BigInt!
+  # total market settled by user
+  totalSettled: BigInt!
+  # total reward claimed (correct prediction + creation + settle)
+  totalRewardClaimed: BigInt!
+  # Total prediction rewards
+  totalPRClaimed: BigInt!
+  # Total market creation rewards
+  totalMCRClaimed: BigInt!
+  # Total market settle rewards
+  totalSRClaimed: BigInt!
+  # Total loss
+  totalLoss: BigInt!
+  # total profit and loss
+  totalPNL: BigInt!
+  # daily user predictions snapshots
+  userDayData: [UserDayData!]! @derivedFrom(field: "user")
+  # monthly user predictions snapshots
+  userMonthData: [UserMonthData!]! @derivedFrom(field: "user")
+  # User predictions
   predictions: [MarketPrediction]! @derivedFrom(field: "user")
+}
+
+type UserDayData @entity {
+  # timestamp rounded to current day by dividing by 86400
+  id: ID!
+  # User pointer
+  user: User!
+  # timestamp rounded to current day by dividing by 86400
+  date: Int!
+  # Profit and loss
+  pnl:  BigInt!
+}
+
+type UserMonthData @entity {
+  # timestamp rounded to current month by dividing by 86400
+  id: ID!
+  # User pointer
+  user: User!
+  # timestamp rounded to current month by dividing by 86400
+  date: Int!
+  # Profit and loss
+  pnl:  BigInt!
 }
 
 type MarketPrediction @entity {
   id: ID!
+  # User pointer
   user: User!
+  # Market pointer
   market: Market!
+  # Pool pointer
   pool: Pool!
+  # Positions allocated
   positions: BigInt!
+  # Playing amount
   amount: BigInt!
+  # Leverage
   leverage: Int!
-  date: BigInt!
+  # boost mode applied
+  boostMode: Boolean!
+  # prediction timestamp
+  timestamp: BigInt!
+  # rewards claimed
+  rewardClaimed: Boolean!
 }
 
 type Pool @entity {
+  # market address + pool
   id: ID!
+  # Market pointer
+  market: Market!
+  # Upper part of range
   upper: BigInt!
+  # lower part of range
   lower: BigInt!
+  # Total staked amount
   staked: BigInt!
+  # Possible rewards
   rewards: BigInt!
+  # Winning pool
+  winningPool: Boolean!
+  # Predictions for this pool
   predictions: [MarketPrediction]! @derivedFrom(field: "pool")
 }
 
+
 type Market @entity {
   id: ID!
+  # Market phase
   phase: Phase!
+  # Market asset
   asset: Asset!
+  # Market duration in seconds
   duration: BigInt!
-  creationTime: BigInt!
+  # Market token address
+  token: Bytes!
+  # creation
+  createdAtTimestamp: BigInt!
+
+  # TODO -- all Times
+
+  # block number created at
+  createdAtBlockNumber: BigInt!
+  # Winning pool
+  winningPool: Pool
+  # Initial market liquidity
   liquidity: BigInt!
+  # total Predictions
+  totalPredictions: BigInt!
+  # Total market participants
+  totalParticipants: BigInt!
+  # Total participation
+  totalParticipation: BigInt!
+  # Total rewards distribute
+  totalRewardsDistributed: BigInt!
+  # Market creator fee in percent
+  creationFee: Int!
+  # Market settler fee in percent
+  settlerFee: Int!
+  # Platform fee in percent
+  platformFee: Int!
+  # Market creator address
   creator: Bytes!
-  pools: [Pool!]!
+  # Market settler address
+  settler: Bytes
+  # Creation reward claimed
+  creationRewardClaimed: Boolean!
+  # Settlement reward claimed
+  settlementRewardClaimed: Boolean!
+  # platform reward claimed
+  platformRewardClaimed: Boolean!
+  
+  pools: [Pool!]! @derivedFrom(field: "market")
   predictions: [MarketPrediction]! @derivedFrom(field: "market")
 }
+
