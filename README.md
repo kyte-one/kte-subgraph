@@ -3,6 +3,7 @@
 # Query total btc market
 
 # Query all BTC/USD asset
+```
 query {
   asset(assetId: id) {
     markets {
@@ -10,8 +11,10 @@ query {
     }
   }
 }
+```
 
 # Query all market predictions
+```
 query {
   market (id: marketId) {
     predictions {
@@ -19,15 +22,19 @@ query {
     }
   }
 }
+```
 
 # Query market pool predictions
+```
 query {
   pools (id: poolId) {
 
   }
 }
+```
 
 # Query current user , current market prediction
+```
 query {
   user (id: userId) {
     predictions {
@@ -37,8 +44,10 @@ query {
     }
   }
 }
+```
 
 # query user open market predictions
+```
 query {
   user(id: userId) {
     predictions(where: { rewardClaimed: False}) {
@@ -46,8 +55,10 @@ query {
     }
   }
 }
+```
 
 # query user all predictions
+```
 query {
   user(id: userId) {
     predictions {
@@ -55,21 +66,26 @@ query {
     }
   }
 }
+```
 
-
+```
 User (id) {
   predictions() {
 
   }
 }
+```
 
+```
 User (id) {
   predictions(where: { rewardClaimed: false}) {
 
   }
 }
+```
 
-
+```
 Markets(where: { userId: userId, rewardClaimed: }) {
 
 }
+```
