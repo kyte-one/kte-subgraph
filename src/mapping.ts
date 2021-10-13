@@ -1,5 +1,6 @@
+import { AssetAdded, MarketCreated } from '../generated/MarketFactory/MarketFactory';
 
-export function handleAssetAdded(event: any): void {
+export function handleAssetAdded(event: AssetAdded): void {
   // let gravatar = new Gravatar(event.params.id.toHex())
   // gravatar.owner = event.params.owner
   // gravatar.displayName = event.params.displayName
@@ -7,7 +8,7 @@ export function handleAssetAdded(event: any): void {
   // gravatar.save()
 }
 
-export function handleMarketCreated(event: any): void {
+export function handleMarketCreated(event: MarketCreated): void {
   // let id = event.params.id.toHex()
   // let gravatar = Gravatar.load(id)
   // if (gravatar == null) {

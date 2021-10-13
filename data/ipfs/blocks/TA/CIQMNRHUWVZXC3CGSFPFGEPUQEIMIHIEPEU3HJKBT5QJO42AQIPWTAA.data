@@ -1,0 +1,42 @@
+
+Ã	»	dataSources:
+  - kind: ethereum/contract
+    mapping:
+      abis:
+        - file:
+            /: /ipfs/QmVAC66r8JeaqGSk2k74Cx1y9m9oQqyV3fsHShatZQJ4iZ
+          name: MarketFactory
+        - file:
+            /: /ipfs/QmZMiDpc7d4FgTqq4XdhGLH5ZRtygMZAqnonZUkmtytgg1
+          name: CryptoMarket
+      apiVersion: 0.0.4
+      entities:
+        - Factory
+        - Asset
+        - AssetHourData
+        - AssetDayData
+        - Market
+        - Pool
+      eventHandlers:
+        - event: 'AssetAdded(indexed bytes32,indexed address,uint8,uint8,address)'
+          handler: handleAssetAdded
+        - event: >-
+            MarketCreated(indexed
+            uint256,uint256,uint256,uint256[],uint256,address)
+          handler: handleMarketCreated
+      file:
+        /: /ipfs/QmVmfVtghvjTAPqLkCCEVBcFrPMSBsH4KgTBH5JTSRCgcN
+      kind: ethereum/events
+      language: wasm/assemblyscript
+    name: MarketFactory
+    network: mainnet
+    source:
+      abi: MarketFactory
+      address: '0x610178dA211FEF7D417bC0e6FeD39F05609AD788'
+description: Kyte subgraph
+repository: 'https://github.com/Kyte-Research/kyte-one-subgraph'
+schema:
+  file:
+    /: /ipfs/QmdAyCXDVh5rUv7z9RdfE5xQ3kBWcpm7h53LC5nKTho8AK
+specVersion: 0.0.2
+»	
