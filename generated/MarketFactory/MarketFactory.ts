@@ -10,16 +10,16 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
-export class AssetAdded extends ethereum.Event {
-  get params(): AssetAdded__Params {
-    return new AssetAdded__Params(this);
+export class AddAsset extends ethereum.Event {
+  get params(): AddAsset__Params {
+    return new AddAsset__Params(this);
   }
 }
 
-export class AssetAdded__Params {
-  _event: AssetAdded;
+export class AddAsset__Params {
+  _event: AddAsset;
 
-  constructor(event: AssetAdded) {
+  constructor(event: AddAsset) {
     this._event = event;
   }
 
@@ -44,16 +44,34 @@ export class AssetAdded__Params {
   }
 }
 
-export class MarketCreated extends ethereum.Event {
-  get params(): MarketCreated__Params {
-    return new MarketCreated__Params(this);
+export class AddMarketToken extends ethereum.Event {
+  get params(): AddMarketToken__Params {
+    return new AddMarketToken__Params(this);
   }
 }
 
-export class MarketCreated__Params {
-  _event: MarketCreated;
+export class AddMarketToken__Params {
+  _event: AddMarketToken;
 
-  constructor(event: MarketCreated) {
+  constructor(event: AddMarketToken) {
+    this._event = event;
+  }
+
+  get marketToken(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class CreateMarket extends ethereum.Event {
+  get params(): CreateMarket__Params {
+    return new CreateMarket__Params(this);
+  }
+}
+
+export class CreateMarket__Params {
+  _event: CreateMarket;
+
+  constructor(event: CreateMarket) {
     this._event = event;
   }
 
@@ -104,25 +122,59 @@ export class OwnershipTransferred__Params {
   }
 }
 
-export class MarketFactory__getAllAssetsResultValue0Struct extends ethereum.Tuple {
-  get assetName(): Bytes {
-    return this[0].toBytes();
+export class UpdateLossConstant extends ethereum.Event {
+  get params(): UpdateLossConstant__Params {
+    return new UpdateLossConstant__Params(this);
+  }
+}
+
+export class UpdateLossConstant__Params {
+  _event: UpdateLossConstant;
+
+  constructor(event: UpdateLossConstant) {
+    this._event = event;
   }
 
-  get assetFeed(): Address {
-    return this[1].toAddress();
+  get lossConstant(): i32 {
+    return this._event.parameters[0].value.toI32();
+  }
+}
+
+export class UpdateMinMarketLiquidity extends ethereum.Event {
+  get params(): UpdateMinMarketLiquidity__Params {
+    return new UpdateMinMarketLiquidity__Params(this);
+  }
+}
+
+export class UpdateMinMarketLiquidity__Params {
+  _event: UpdateMinMarketLiquidity;
+
+  constructor(event: UpdateMinMarketLiquidity) {
+    this._event = event;
   }
 
-  get decimals(): i32 {
-    return this[2].toI32();
+  get liquidity(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+}
+
+export class MarketFactory__feesPercentageResult {
+  value0: BigInt;
+  value1: BigInt;
+  value2: BigInt;
+
+  constructor(value0: BigInt, value1: BigInt, value2: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
   }
 
-  get assetFeedType(): i32 {
-    return this[3].toI32();
-  }
-
-  get active(): boolean {
-    return this[4].toBoolean();
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
+    return map;
   }
 }
 
@@ -158,211 +210,40 @@ export class MarketFactory__getMarketDurationParamsResultValue0Struct extends et
   }
 }
 
-export class MarketFactory__getMarketsResultValue0Struct extends ethereum.Tuple {
-  get marketAddress(): Address {
-    return this[0].toAddress();
-  }
-
-  get asset(): MarketFactory__getMarketsResultValue0AssetStruct {
-    return this[1].toTuple() as MarketFactory__getMarketsResultValue0AssetStruct;
-  }
-
-  get time(): MarketFactory__getMarketsResultValue0TimeStruct {
-    return this[2].toTuple() as MarketFactory__getMarketsResultValue0TimeStruct;
-  }
-
-  get pools(): Array<MarketFactory__getMarketsResultValue0PoolsStruct> {
-    return this[3].toTupleArray<
-      MarketFactory__getMarketsResultValue0PoolsStruct
-    >();
-  }
-
-  get phase(): i32 {
-    return this[4].toI32();
-  }
-}
-
-export class MarketFactory__getMarketsResultValue0AssetStruct extends ethereum.Tuple {
-  get assetName(): Bytes {
-    return this[0].toBytes();
-  }
-
-  get assetFeed(): Address {
-    return this[1].toAddress();
-  }
-
-  get decimals(): i32 {
-    return this[2].toI32();
-  }
-
-  get assetFeedType(): i32 {
-    return this[3].toI32();
-  }
-
-  get active(): boolean {
-    return this[4].toBoolean();
-  }
-}
-
-export class MarketFactory__getMarketsResultValue0TimeStruct extends ethereum.Tuple {
-  get creationTime(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get tradingEndTime(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get waitingEndTime(): BigInt {
-    return this[2].toBigInt();
-  }
-
-  get reportingEndTime(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get disputeEndTime(): BigInt {
-    return this[4].toBigInt();
-  }
-}
-
-export class MarketFactory__getMarketsResultValue0PoolsStruct extends ethereum.Tuple {
-  get upper(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get lower(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get staked(): BigInt {
-    return this[2].toBigInt();
-  }
-
-  get participants(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get positions(): BigInt {
-    return this[4].toBigInt();
-  }
-
-  get rewards(): BigInt {
-    return this[5].toBigInt();
-  }
-}
-
-export class MarketFactory__getMarketsResult {
-  value0: Array<MarketFactory__getMarketsResultValue0Struct>;
+export class MarketFactory__marketDurationParamsResult {
+  value0: BigInt;
   value1: BigInt;
 
-  constructor(
-    value0: Array<MarketFactory__getMarketsResultValue0Struct>,
-    value1: BigInt
-  ) {
+  constructor(value0: BigInt, value1: BigInt) {
     this.value0 = value0;
     this.value1 = value1;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
     let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromTupleArray(this.value0));
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
     map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
   }
 }
 
-export class MarketFactory__getOnGoingMarketsResultValue0Struct extends ethereum.Tuple {
-  get marketAddress(): Address {
-    return this[0].toAddress();
+export class MarketFactory__marketWindowParamsResult {
+  value0: BigInt;
+  value1: BigInt;
+  value2: BigInt;
+
+  constructor(value0: BigInt, value1: BigInt, value2: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
   }
 
-  get asset(): MarketFactory__getOnGoingMarketsResultValue0AssetStruct {
-    return this[1].toTuple() as MarketFactory__getOnGoingMarketsResultValue0AssetStruct;
-  }
-
-  get time(): MarketFactory__getOnGoingMarketsResultValue0TimeStruct {
-    return this[2].toTuple() as MarketFactory__getOnGoingMarketsResultValue0TimeStruct;
-  }
-
-  get pools(): Array<MarketFactory__getOnGoingMarketsResultValue0PoolsStruct> {
-    return this[3].toTupleArray<
-      MarketFactory__getOnGoingMarketsResultValue0PoolsStruct
-    >();
-  }
-
-  get phase(): i32 {
-    return this[4].toI32();
-  }
-}
-
-export class MarketFactory__getOnGoingMarketsResultValue0AssetStruct extends ethereum.Tuple {
-  get assetName(): Bytes {
-    return this[0].toBytes();
-  }
-
-  get assetFeed(): Address {
-    return this[1].toAddress();
-  }
-
-  get decimals(): i32 {
-    return this[2].toI32();
-  }
-
-  get assetFeedType(): i32 {
-    return this[3].toI32();
-  }
-
-  get active(): boolean {
-    return this[4].toBoolean();
-  }
-}
-
-export class MarketFactory__getOnGoingMarketsResultValue0TimeStruct extends ethereum.Tuple {
-  get creationTime(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get tradingEndTime(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get waitingEndTime(): BigInt {
-    return this[2].toBigInt();
-  }
-
-  get reportingEndTime(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get disputeEndTime(): BigInt {
-    return this[4].toBigInt();
-  }
-}
-
-export class MarketFactory__getOnGoingMarketsResultValue0PoolsStruct extends ethereum.Tuple {
-  get upper(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get lower(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get staked(): BigInt {
-    return this[2].toBigInt();
-  }
-
-  get participants(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get positions(): BigInt {
-    return this[4].toBigInt();
-  }
-
-  get rewards(): BigInt {
-    return this[5].toBigInt();
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
+    return map;
   }
 }
 
@@ -374,17 +255,19 @@ export class MarketFactory extends ethereum.SmartContract {
   createMarket(
     _assetId: BigInt,
     _duration: BigInt,
-    _pools: Array<BigInt>,
-    _liquidity: BigInt
+    _poolsRange: Array<BigInt>,
+    _liquidity: BigInt,
+    _token: Address
   ): Address {
     let result = super.call(
       "createMarket",
-      "createMarket(uint256,uint256,uint256[],uint256):(address)",
+      "createMarket(uint256,uint256,uint256[],uint256,address):(address)",
       [
         ethereum.Value.fromUnsignedBigInt(_assetId),
         ethereum.Value.fromUnsignedBigInt(_duration),
-        ethereum.Value.fromUnsignedBigIntArray(_pools),
-        ethereum.Value.fromUnsignedBigInt(_liquidity)
+        ethereum.Value.fromUnsignedBigIntArray(_poolsRange),
+        ethereum.Value.fromUnsignedBigInt(_liquidity),
+        ethereum.Value.fromAddress(_token)
       ]
     );
 
@@ -394,17 +277,19 @@ export class MarketFactory extends ethereum.SmartContract {
   try_createMarket(
     _assetId: BigInt,
     _duration: BigInt,
-    _pools: Array<BigInt>,
-    _liquidity: BigInt
+    _poolsRange: Array<BigInt>,
+    _liquidity: BigInt,
+    _token: Address
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "createMarket",
-      "createMarket(uint256,uint256,uint256[],uint256):(address)",
+      "createMarket(uint256,uint256,uint256[],uint256,address):(address)",
       [
         ethereum.Value.fromUnsignedBigInt(_assetId),
         ethereum.Value.fromUnsignedBigInt(_duration),
-        ethereum.Value.fromUnsignedBigIntArray(_pools),
-        ethereum.Value.fromUnsignedBigInt(_liquidity)
+        ethereum.Value.fromUnsignedBigIntArray(_poolsRange),
+        ethereum.Value.fromUnsignedBigInt(_liquidity),
+        ethereum.Value.fromAddress(_token)
       ]
     );
     if (result.reverted) {
@@ -414,24 +299,26 @@ export class MarketFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  getAllAssets(): Array<MarketFactory__getAllAssetsResultValue0Struct> {
+  feesPercentage(): MarketFactory__feesPercentageResult {
     let result = super.call(
-      "getAllAssets",
-      "getAllAssets():((bytes32,address,uint8,uint8,bool)[])",
+      "feesPercentage",
+      "feesPercentage():(uint256,uint256,uint256)",
       []
     );
 
-    return result[0].toTupleArray<
-      MarketFactory__getAllAssetsResultValue0Struct
-    >();
+    return new MarketFactory__feesPercentageResult(
+      result[0].toBigInt(),
+      result[1].toBigInt(),
+      result[2].toBigInt()
+    );
   }
 
-  try_getAllAssets(): ethereum.CallResult<
-    Array<MarketFactory__getAllAssetsResultValue0Struct>
+  try_feesPercentage(): ethereum.CallResult<
+    MarketFactory__feesPercentageResult
   > {
     let result = super.tryCall(
-      "getAllAssets",
-      "getAllAssets():((bytes32,address,uint8,uint8,bool)[])",
+      "feesPercentage",
+      "feesPercentage():(uint256,uint256,uint256)",
       []
     );
     if (result.reverted) {
@@ -439,8 +326,27 @@ export class MarketFactory extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      value[0].toTupleArray<MarketFactory__getAllAssetsResultValue0Struct>()
+      new MarketFactory__feesPercentageResult(
+        value[0].toBigInt(),
+        value[1].toBigInt(),
+        value[2].toBigInt()
+      )
     );
+  }
+
+  gateway(): Address {
+    let result = super.call("gateway", "gateway():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_gateway(): ethereum.CallResult<Address> {
+    let result = super.tryCall("gateway", "gateway():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   getAsset(_assetId: BigInt): MarketFactory__getAssetResultValue0Struct {
@@ -529,69 +435,93 @@ export class MarketFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getMarkets(
-    _pageSize: BigInt,
-    _offset: BigInt
-  ): MarketFactory__getMarketsResult {
+  lossConstant(): i32 {
+    let result = super.call("lossConstant", "lossConstant():(uint8)", []);
+
+    return result[0].toI32();
+  }
+
+  try_lossConstant(): ethereum.CallResult<i32> {
+    let result = super.tryCall("lossConstant", "lossConstant():(uint8)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toI32());
+  }
+
+  marketDurationParams(): MarketFactory__marketDurationParamsResult {
     let result = super.call(
-      "getMarkets",
-      "getMarkets(uint256,uint256):((address,(bytes32,address,uint8,uint8,bool),(uint256,uint256,uint256,uint256,uint256),(uint256,uint256,uint256,uint256,uint256,uint256)[],uint8)[],uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(_pageSize),
-        ethereum.Value.fromUnsignedBigInt(_offset)
-      ]
+      "marketDurationParams",
+      "marketDurationParams():(uint256,uint256)",
+      []
     );
 
-    return new MarketFactory__getMarketsResult(
-      result[0].toTupleArray<MarketFactory__getMarketsResultValue0Struct>(),
+    return new MarketFactory__marketDurationParamsResult(
+      result[0].toBigInt(),
       result[1].toBigInt()
     );
   }
 
-  try_getMarkets(
-    _pageSize: BigInt,
-    _offset: BigInt
-  ): ethereum.CallResult<MarketFactory__getMarketsResult> {
+  try_marketDurationParams(): ethereum.CallResult<
+    MarketFactory__marketDurationParamsResult
+  > {
     let result = super.tryCall(
-      "getMarkets",
-      "getMarkets(uint256,uint256):((address,(bytes32,address,uint8,uint8,bool),(uint256,uint256,uint256,uint256,uint256),(uint256,uint256,uint256,uint256,uint256,uint256)[],uint8)[],uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(_pageSize),
-        ethereum.Value.fromUnsignedBigInt(_offset)
-      ]
+      "marketDurationParams",
+      "marketDurationParams():(uint256,uint256)",
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new MarketFactory__getMarketsResult(
-        value[0].toTupleArray<MarketFactory__getMarketsResultValue0Struct>(),
+      new MarketFactory__marketDurationParamsResult(
+        value[0].toBigInt(),
         value[1].toBigInt()
       )
     );
   }
 
-  getOnGoingMarkets(): Array<
-    MarketFactory__getOnGoingMarketsResultValue0Struct
-  > {
+  marketTokens(param0: Address): boolean {
+    let result = super.call("marketTokens", "marketTokens(address):(bool)", [
+      ethereum.Value.fromAddress(param0)
+    ]);
+
+    return result[0].toBoolean();
+  }
+
+  try_marketTokens(param0: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall("marketTokens", "marketTokens(address):(bool)", [
+      ethereum.Value.fromAddress(param0)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  marketWindowParams(): MarketFactory__marketWindowParamsResult {
     let result = super.call(
-      "getOnGoingMarkets",
-      "getOnGoingMarkets():((address,(bytes32,address,uint8,uint8,bool),(uint256,uint256,uint256,uint256,uint256),(uint256,uint256,uint256,uint256,uint256,uint256)[],uint8)[])",
+      "marketWindowParams",
+      "marketWindowParams():(uint256,uint256,uint256)",
       []
     );
 
-    return result[0].toTupleArray<
-      MarketFactory__getOnGoingMarketsResultValue0Struct
-    >();
+    return new MarketFactory__marketWindowParamsResult(
+      result[0].toBigInt(),
+      result[1].toBigInt(),
+      result[2].toBigInt()
+    );
   }
 
-  try_getOnGoingMarkets(): ethereum.CallResult<
-    Array<MarketFactory__getOnGoingMarketsResultValue0Struct>
+  try_marketWindowParams(): ethereum.CallResult<
+    MarketFactory__marketWindowParamsResult
   > {
     let result = super.tryCall(
-      "getOnGoingMarkets",
-      "getOnGoingMarkets():((address,(bytes32,address,uint8,uint8,bool),(uint256,uint256,uint256,uint256,uint256),(uint256,uint256,uint256,uint256,uint256,uint256)[],uint8)[])",
+      "marketWindowParams",
+      "marketWindowParams():(uint256,uint256,uint256)",
       []
     );
     if (result.reverted) {
@@ -599,26 +529,28 @@ export class MarketFactory extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      value[0].toTupleArray<
-        MarketFactory__getOnGoingMarketsResultValue0Struct
-      >()
+      new MarketFactory__marketWindowParamsResult(
+        value[0].toBigInt(),
+        value[1].toBigInt(),
+        value[2].toBigInt()
+      )
     );
   }
 
-  getTotalMarkets(): BigInt {
+  minMarketLiquidity(): BigInt {
     let result = super.call(
-      "getTotalMarkets",
-      "getTotalMarkets():(uint256)",
+      "minMarketLiquidity",
+      "minMarketLiquidity():(uint256)",
       []
     );
 
     return result[0].toBigInt();
   }
 
-  try_getTotalMarkets(): ethereum.CallResult<BigInt> {
+  try_minMarketLiquidity(): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "getTotalMarkets",
-      "getTotalMarkets():(uint256)",
+      "minMarketLiquidity",
+      "minMarketLiquidity():(uint256)",
       []
     );
     if (result.reverted) {
@@ -672,6 +604,18 @@ export class ConstructorCall__Inputs {
   get _marketDurationParams(): ConstructorCall_marketDurationParamsStruct {
     return this._call.inputValues[2].value.toTuple() as ConstructorCall_marketDurationParamsStruct;
   }
+
+  get _feesPercentage(): ConstructorCall_feesPercentageStruct {
+    return this._call.inputValues[3].value.toTuple() as ConstructorCall_feesPercentageStruct;
+  }
+
+  get _minMarketLiquidity(): BigInt {
+    return this._call.inputValues[4].value.toBigInt();
+  }
+
+  get _lossConstant(): i32 {
+    return this._call.inputValues[5].value.toI32();
+  }
 }
 
 export class ConstructorCall__Outputs {
@@ -703,6 +647,20 @@ export class ConstructorCall_marketDurationParamsStruct extends ethereum.Tuple {
 
   get max(): BigInt {
     return this[1].toBigInt();
+  }
+}
+
+export class ConstructorCall_feesPercentageStruct extends ethereum.Tuple {
+  get creator(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get settler(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get platform(): BigInt {
+    return this[2].toBigInt();
   }
 }
 
@@ -748,6 +706,36 @@ export class AddAssetCall__Outputs {
   }
 }
 
+export class AddMarketTokenCall extends ethereum.Call {
+  get inputs(): AddMarketTokenCall__Inputs {
+    return new AddMarketTokenCall__Inputs(this);
+  }
+
+  get outputs(): AddMarketTokenCall__Outputs {
+    return new AddMarketTokenCall__Outputs(this);
+  }
+}
+
+export class AddMarketTokenCall__Inputs {
+  _call: AddMarketTokenCall;
+
+  constructor(call: AddMarketTokenCall) {
+    this._call = call;
+  }
+
+  get _token(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class AddMarketTokenCall__Outputs {
+  _call: AddMarketTokenCall;
+
+  constructor(call: AddMarketTokenCall) {
+    this._call = call;
+  }
+}
+
 export class CreateMarketCall extends ethereum.Call {
   get inputs(): CreateMarketCall__Inputs {
     return new CreateMarketCall__Inputs(this);
@@ -773,12 +761,16 @@ export class CreateMarketCall__Inputs {
     return this._call.inputValues[1].value.toBigInt();
   }
 
-  get _pools(): Array<BigInt> {
+  get _poolsRange(): Array<BigInt> {
     return this._call.inputValues[2].value.toBigIntArray();
   }
 
   get _liquidity(): BigInt {
     return this._call.inputValues[3].value.toBigInt();
+  }
+
+  get _token(): Address {
+    return this._call.inputValues[4].value.toAddress();
   }
 }
 
@@ -789,7 +781,7 @@ export class CreateMarketCall__Outputs {
     this._call = call;
   }
 
-  get value0(): Address {
+  get marketAddress(): Address {
     return this._call.outputValues[0].value.toAddress();
   }
 }
@@ -820,40 +812,6 @@ export class RenounceOwnershipCall__Outputs {
   }
 }
 
-export class SettleMarketCall extends ethereum.Call {
-  get inputs(): SettleMarketCall__Inputs {
-    return new SettleMarketCall__Inputs(this);
-  }
-
-  get outputs(): SettleMarketCall__Outputs {
-    return new SettleMarketCall__Outputs(this);
-  }
-}
-
-export class SettleMarketCall__Inputs {
-  _call: SettleMarketCall;
-
-  constructor(call: SettleMarketCall) {
-    this._call = call;
-  }
-
-  get _market(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _roundId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-}
-
-export class SettleMarketCall__Outputs {
-  _call: SettleMarketCall;
-
-  constructor(call: SettleMarketCall) {
-    this._call = call;
-  }
-}
-
 export class TransferOwnershipCall extends ethereum.Call {
   get inputs(): TransferOwnershipCall__Inputs {
     return new TransferOwnershipCall__Inputs(this);
@@ -880,6 +838,36 @@ export class TransferOwnershipCall__Outputs {
   _call: TransferOwnershipCall;
 
   constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateLossConstantCall extends ethereum.Call {
+  get inputs(): UpdateLossConstantCall__Inputs {
+    return new UpdateLossConstantCall__Inputs(this);
+  }
+
+  get outputs(): UpdateLossConstantCall__Outputs {
+    return new UpdateLossConstantCall__Outputs(this);
+  }
+}
+
+export class UpdateLossConstantCall__Inputs {
+  _call: UpdateLossConstantCall;
+
+  constructor(call: UpdateLossConstantCall) {
+    this._call = call;
+  }
+
+  get _lossConstant(): i32 {
+    return this._call.inputValues[0].value.toI32();
+  }
+}
+
+export class UpdateLossConstantCall__Outputs {
+  _call: UpdateLossConstantCall;
+
+  constructor(call: UpdateLossConstantCall) {
     this._call = call;
   }
 }
@@ -954,6 +942,36 @@ export class UpdateMarketWindowParamsCall__Outputs {
   _call: UpdateMarketWindowParamsCall;
 
   constructor(call: UpdateMarketWindowParamsCall) {
+    this._call = call;
+  }
+}
+
+export class UpdateMinMarketLiquidityCall extends ethereum.Call {
+  get inputs(): UpdateMinMarketLiquidityCall__Inputs {
+    return new UpdateMinMarketLiquidityCall__Inputs(this);
+  }
+
+  get outputs(): UpdateMinMarketLiquidityCall__Outputs {
+    return new UpdateMinMarketLiquidityCall__Outputs(this);
+  }
+}
+
+export class UpdateMinMarketLiquidityCall__Inputs {
+  _call: UpdateMinMarketLiquidityCall;
+
+  constructor(call: UpdateMinMarketLiquidityCall) {
+    this._call = call;
+  }
+
+  get _minMarketLiquidity(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+}
+
+export class UpdateMinMarketLiquidityCall__Outputs {
+  _call: UpdateMinMarketLiquidityCall;
+
+  constructor(call: UpdateMinMarketLiquidityCall) {
     this._call = call;
   }
 }

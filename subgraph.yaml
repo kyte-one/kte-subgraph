@@ -34,9 +34,9 @@ dataSources:
           handler: handleAddMarketToken
         - event: UpdateMinMarketLiquidity(uint256)
           handler: handleUpdateMinMarketLiquidity
-        - event: UpdateUpdateLossConstant(uint8)
-          handler: handleUpdateUpdateLossConstant
-      file: ./src/mapping.ts
+        - event: UpdateLossConstant(uint8)
+          handler: handleUpdateLossConstant
+      file: ./src/factory-mapping.ts
 
 templates:
   - kind: ethereum/contract
@@ -48,7 +48,7 @@ templates:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
-      file: ./src/mapping.ts
+      file: ./src/market-mapping.ts
       entities:
         - MarketPrediction
       abis:
@@ -59,7 +59,7 @@ templates:
           handler: handlePlacePrediction
         - event: SettleMarket(indexed address,indexed address,indexed uint256,uint8,uint256,uint256,uint256,uint256,uint256)
           handler: handleSettleMarket
-        - event: DistributeMarketFee(indexed address,indexed address,indexed uint8,uint256)
+        - event: DistributeMarketFee(indexed address,indexed address,uint8,uint256)
           handler: handleDistributeMarketFee
         - event: ClaimReturns(indexed address,indexed address,uint256,uint256)
           handler: handleClaimReturns
