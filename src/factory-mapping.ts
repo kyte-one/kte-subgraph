@@ -6,10 +6,10 @@ import {
   UpdateMinMarketLiquidity,
   UpdateLossConstant,
 } from "../generated/MarketFactory/MarketFactory";
-import { Asset, Market, Factory, User } from "../generated/schema";
+import { Asset, Market, Factory, User, Pool } from "../generated/schema";
 
-import { ZERO_BI, MARKET_FACTORY_ADDRESS, ONE_BI } from './constant';
-import { formatAssetFeedType } from './utils';
+import { ZERO_BI, MARKET_FACTORY_ADDRESS, ONE_BI } from "./constant";
+import { formatAssetFeedType } from "./utils";
 
 function createFactory(owner: string): Factory {
   let factory = new Factory(MARKET_FACTORY_ADDRESS);
@@ -42,6 +42,45 @@ function createUser(userId: string): User {
   return user;
 }
 
+function createAndSavePool(
+  poolId: string,
+  marketId: string,
+  upper: BigInt,
+  lower: BigInt
+): Pool {
+  let pool = new Pool(poolId);
+  pool.market = marketId;
+  pool.upper = upper;
+  pool.lower = lower;
+  pool.staked = ZERO_BI;
+  pool.rewards = ZERO_BI;
+  pool.winningPool = false;
+  return pool;
+}
+
+function createPools(marketId: string, poolsRange: BigInt[] ): void {
+  for (let i = 0; i < poolsRange.length; i++) {
+    let pool = createAndSavePool(
+      i.toString(),
+      marketId,
+      poolsRange[i],
+      i === 0 ? ZERO_BI : poolsRange[i - 1]
+    );
+    pool.save();
+  }
+
+  let lastPoolId = poolsRange.length + 1;
+
+  // Create last pool
+  let pool = createAndSavePool(
+    lastPoolId.toString(),
+    marketId,
+    BigInt.fromString(Number.MAX_SAFE_INTEGER.toString()),
+    poolsRange[poolsRange.length]
+  );
+  pool.save();
+}
+
 export function handleAssetAdded(event: AddAsset): void {
   // Check if factory exists
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
@@ -50,13 +89,15 @@ export function handleAssetAdded(event: AddAsset): void {
   }
 
   let asset = new Asset(event.params.id.toString());
-  let assetNames = Value.fromBytes(event.params.asset).toString().split(':');
+  let assetNames = Value.fromBytes(event.params.asset)
+    .toString()
+    .split(":");
   asset.asset0 = assetNames[0];
   asset.asset1 = assetNames[1];
   asset.creator = event.params.creator;
   asset.decimals = event.params.decimals;
   // TODO
-  asset.assetFeedType = 'Price';
+  asset.assetFeedType = "Price";
   asset.assetFeed = event.params.assetFeed;
   asset.totalMarkets = ZERO_BI;
   asset.totalPredictions = ZERO_BI;
@@ -69,12 +110,45 @@ export function handleAssetAdded(event: AddAsset): void {
 
 export function handleMarketCreated(event: CreateMarket): void {
   let userId = event.params.creator.toString();
-  let market = new Market(event.params.id.toString());
+  let assetId = event.params.assetId.toString();
+  let marketId = event.params.id.toString();
+  let market = new Market(marketId);
+
+  // Check if user exists
   let user = User.load(userId);
   if (user === null) {
     user = createUser(userId);
   }
   user.totalMarketCreated = user.totalMarketCreated.plus(ONE_BI);
+  market.phase = "Trading";
+  market.asset = assetId;
+  market.duration = event.params.duration;
+  //TODO -- ADD TOKEN
+  // market.token =
+  market.createdAtTimestamp = event.block.timestamp;
+  market.createdAtBlockNumber = event.block.number;
+  market.liquidity = event.params.liquidity;
+
+  market.totalPredictions = ZERO_BI;
+  market.totalParticipants = ZERO_BI;
+  market.totalParticipation = ZERO_BI;
+  market.totalRewardsDistributed = ZERO_BI;
+
+  // TODO -- ADD FEE
+  // market.creationFee
+  // market.settlerFee
+  // market.platformFee
+
+  market.creationRewardClaimed = false;
+  market.settlementRewardClaimed = false;
+  market.platformRewardClaimed = false;
+
+  // Create market pools
+  // TODO - rename to poolsRange 
+  createPools(marketId, event.params.pools);
+
+  user.save();
+  market.save();
 }
 
 export function handleAddMarketToken(event: AddMarketToken): void {}
