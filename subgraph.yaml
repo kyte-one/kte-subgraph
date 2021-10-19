@@ -23,21 +23,27 @@ dataSources:
       abis:
         - name: MarketFactory
           file: ./abis/MarketFactory.json
-        - name: CryptoMarket
-          file: ./abis/CryptoMarket.json
+        - name: Market
+          file: ./abis/Market.json
       eventHandlers:
-        - event: AssetAdded(indexed bytes32,indexed address,uint8,uint8,address)
-          handler: handleAssetAdded
-        - event: MarketCreated(indexed uint256,uint256,uint256,uint256[],uint256,address)
-          handler: handleMarketCreated
+        - event: AddAsset(indexed bytes32,indexed address,uint8,uint8,address)
+          handler: handleAddAsset
+        - event: CreateMarket(indexed uint256,uint256,uint256,uint256[],uint256,address)
+          handler: handleCreateMarket
+        - event: AddMarketToken(indexed address)
+          handler: handleAddMarketToken
+        - event: UpdateMinMarketLiquidity(uint256)
+          handler: handleUpdateMinMarketLiquidity
+        - event: UpdateUpdateLossConstant(uint8)
+          handler: handleUpdateUpdateLossConstant
       file: ./src/mapping.ts
 
 templates:
   - kind: ethereum/contract
-    name: CryptoMarket
+    name: Market
     network: mainnet
     source:
-      abi: CryptoMarket
+      abi: Market
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -46,8 +52,14 @@ templates:
       entities:
         - MarketPrediction
       abis:
-        - name: CryptoMarket
-          file: ./abis/CryptoMarket.json
+        - name: Market
+          file: ./abis/Market.json
       eventHandlers:
-        - event: Initialize(uint160,int24)
-          handler: handleInitialize
+        - event: PlacePrediction(indexed address,indexed bytes32,indexed address,uint8,uint256,uint8,uint256,uint256,address)
+          handler: handlePlacePrediction
+        - event: SettleMarket(indexed address,indexed address,indexed uint256,uint8,uint256,uint256,uint256,uint256,uint256)
+          handler: handleSettleMarket
+        - event: DistributeMarketFee(indexed address,indexed address,indexed uint8,uint256)
+          handler: handleDistributeMarketFee
+        - event: ClaimReturns(indexed address,indexed address,uint256,uint256)
+          handler: handleClaimReturns
