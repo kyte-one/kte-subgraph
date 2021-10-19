@@ -26,9 +26,9 @@ dataSources:
         - name: Market
           file: ./abis/Market.json
       eventHandlers:
-        - event: AddAsset(indexed bytes32,indexed address,uint8,uint8,address)
+        - event: AddAsset(indexed uint256,indexed bytes32,indexed address,uint8,uint8,address)
           handler: handleAddAsset
-        - event: CreateMarket(indexed uint256,uint256,uint256,uint256[],uint256,address)
+        - event: CreateMarket(indexed address,indexed uint256,uint256,uint256,uint256[],uint256,address)
           handler: handleCreateMarket
         - event: AddMarketToken(indexed address)
           handler: handleAddMarketToken
