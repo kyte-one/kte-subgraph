@@ -81,7 +81,7 @@ function createPools(marketId: string, poolsRange: BigInt[] ): void {
   pool.save();
 }
 
-export function handleAssetAdded(event: AddAsset): void {
+export function handleAddAsset(event: AddAsset): void {
   // Check if factory exists
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (factory === null) {
@@ -108,7 +108,7 @@ export function handleAssetAdded(event: AddAsset): void {
   factory.save();
 }
 
-export function handleMarketCreated(event: CreateMarket): void {
+export function handleCreateMarket(event: CreateMarket): void {
   let userId = event.params.creator.toString();
   let assetId = event.params.assetId.toString();
   let marketId = event.params.id.toString();
