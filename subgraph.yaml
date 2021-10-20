@@ -28,7 +28,7 @@ dataSources:
       eventHandlers:
         - event: AddAsset(indexed uint256,indexed bytes32,indexed address,uint8,uint8,address)
           handler: handleAddAsset
-        - event: CreateMarket(indexed address,indexed uint256,uint256,uint256,uint256[],uint256,address)
+        - event: CreateMarket(indexed address,indexed uint256,uint256,uint256,uint256[],uint256,address,address,uint256,uint256,uint256)
           handler: handleCreateMarket
         - event: AddMarketToken(indexed address)
           handler: handleAddMarketToken

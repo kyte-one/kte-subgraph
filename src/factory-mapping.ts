@@ -123,8 +123,8 @@ export function handleMarketCreated(event: CreateMarket): void {
   market.phase = "Trading";
   market.asset = assetId;
   market.duration = event.params.duration;
-  //TODO -- ADD TOKEN
-  // market.token =
+
+  market.token = event.params.token;
   market.createdAtTimestamp = event.block.timestamp;
   market.createdAtBlockNumber = event.block.number;
   market.liquidity = event.params.liquidity;
@@ -134,18 +134,16 @@ export function handleMarketCreated(event: CreateMarket): void {
   market.totalParticipation = ZERO_BI;
   market.totalRewardsDistributed = ZERO_BI;
 
-  // TODO -- ADD FEE
-  // market.creationFee
-  // market.settlerFee
-  // market.platformFee
+  market.creationFee = event.params.creatorFee;
+  market.settlerFee = event.params.settlerFee;
+  market.platformFee = event.params.platformFee;
 
   market.creationRewardClaimed = false;
   market.settlementRewardClaimed = false;
   market.platformRewardClaimed = false;
 
   // Create market pools
-  // TODO - rename to poolsRange 
-  createPools(marketId, event.params.pools);
+  createPools(marketId, event.params.poolsRange);
 
   user.save();
   market.save();
