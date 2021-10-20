@@ -1,11 +1,17 @@
-import {  Bytes, Value } from '@graphprotocol/graph-ts'
+import { BigInt } from "@graphprotocol/graph-ts";
 
+export function formatAssetFeedType(feedType: BigInt): string {
+  if (feedType.equals(BigInt.fromString("0"))) {
+    return "Price";
+  }
 
-export function formatAssetFeedType(feedType: number): string {
-    switch (feedType) {
-        case 0: return 'Price';
-        case 1: return 'Volume';
-        case 2: return 'Rank';
-        default: return 'Price';
-    }
+  if (feedType.equals(BigInt.fromString("1"))) {
+    return "Volume";
+  }
+
+  if (feedType.equals(BigInt.fromString("2"))) {
+    return "Rank";
+  }
+
+  return "Price";
 }

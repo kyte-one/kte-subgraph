@@ -1,4 +1,4 @@
-import { Bytes, Value, BigInt } from "@graphprotocol/graph-ts";
+import { Bytes, Value, BigInt, log } from "@graphprotocol/graph-ts";
 import {
   AddAsset,
   CreateMarket,
@@ -94,10 +94,10 @@ export function handleAddAsset(event: AddAsset): void {
     .split(":");
   asset.asset0 = assetNames[0];
   asset.asset1 = assetNames[1];
+  log.info('Hello', assetNames);
   asset.creator = event.params.creator;
   asset.decimals = event.params.decimals;
-  // TODO
-  asset.assetFeedType = "Price";
+  asset.assetFeedType = formatAssetFeedType(BigInt.fromI32(event.params.assetFeedType));
   asset.assetFeed = event.params.assetFeed;
   asset.totalMarkets = ZERO_BI;
   asset.totalPredictions = ZERO_BI;
