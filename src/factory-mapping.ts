@@ -13,6 +13,8 @@ import { formatAssetFeedType } from "./utils";
 
 function createFactory(owner: string): Factory {
   let factory = new Factory(MARKET_FACTORY_ADDRESS);
+  factory.totalAssets = ZERO_BI;
+  factory.totalTokens = ZERO_BI;
   factory.totalMarkets = ZERO_BI;
   factory.totalPredictions = ZERO_BI;
   factory.totalParticipants = ZERO_BI;
@@ -89,12 +91,9 @@ export function handleAddAsset(event: AddAsset): void {
   }
 
   let asset = new Asset(event.params.id.toString());
-  let assetNames = Value.fromBytes(event.params.asset)
-    .toString()
-    .split(":");
+  let assetNames = event.params.asset.toString().split(":");
   asset.asset0 = assetNames[0];
   asset.asset1 = assetNames[1];
-  log.info('Hello', assetNames);
   asset.creator = event.params.creator;
   asset.decimals = event.params.decimals;
   asset.assetFeedType = formatAssetFeedType(BigInt.fromI32(event.params.assetFeedType));
@@ -104,6 +103,8 @@ export function handleAddAsset(event: AddAsset): void {
   asset.totalParticipants = ZERO_BI;
   asset.totalParticipation = ZERO_BI;
   asset.totalRewardsDistributed = ZERO_BI;
+
+  factory.totalAssets = factory.totalAssets.plus(ONE_BI);
   asset.save();
   factory.save();
 }
@@ -124,7 +125,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.asset = assetId;
   market.duration = event.params.duration;
 
-  market.token = event.params.token;
+  market.token = event.params.token.toString();
   market.createdAtTimestamp = event.block.timestamp;
   market.createdAtBlockNumber = event.block.number;
   market.liquidity = event.params.liquidity;
@@ -149,7 +150,9 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.save();
 }
 
-export function handleAddMarketToken(event: AddMarketToken): void {}
+export function handleAddMarketToken(event: AddMarketToken): void {
+
+}
 
 export function handleUpdateMinMarketLiquidity(
   event: UpdateMinMarketLiquidity

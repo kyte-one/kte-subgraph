@@ -8,7 +8,7 @@ dataSources:
     name: MarketFactory
     network: mainnet
     source:
-      address: '0x610178dA211FEF7D417bC0e6FeD39F05609AD788'
+      address: '0xc5a5C42992dECbae36851359345FE25997F5C42d'
       abi: MarketFactory
     mapping:
       kind: ethereum/events
@@ -26,6 +26,8 @@ dataSources:
         - name: Market
           file: ./abis/Market.json
       eventHandlers:
+        - event: Init(address,uint256,uint256,uint256,uint24,uint24,uint24,uint256,uint256,uint256,uint8)
+          handler: handleInit
         - event: AddAsset(indexed uint256,indexed bytes32,indexed address,uint8,uint8,address)
           handler: handleAddAsset
         - event: CreateMarket(indexed address,indexed uint256,uint256,uint256,uint256[],uint256,address,address,uint24,uint24,uint24)
@@ -36,6 +38,12 @@ dataSources:
           handler: handleUpdateMinMarketLiquidity
         - event: UpdateLossConstant(uint8)
           handler: handleUpdateLossConstant
+        - event: UpdateMarketWindowParams(uint256,uint256,uint256)
+          handler: handleUpdateMarketWindowParams
+        - event: UpdateMarketDurationParams(uint256,uint256)
+          handler: handleUpdateMarketDurationParams
+        - event: UpdateMarketFeesPercentage(uint24,uint24,uint24)
+          handler: handleUpdateMarketFeesPercentage
       file: ./src/factory-mapping.ts
 
 templates:

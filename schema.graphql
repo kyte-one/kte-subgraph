@@ -16,6 +16,30 @@ enum Phase {
 type Factory @entity {
   # factory address
   id: ID!
+  # Minimum market liquidity
+  minMarketLiquidity: BigInt!
+  # Loss constant
+  lossConstant: BigInt!
+  # Creator fee in percent
+  creatorFee: Int!
+  # Settler fee in percent
+  settlerFee: Int!
+  # Platform fee in percent
+  platformFee: Int!
+  # Waiting window
+  ww: BigInt!
+  # Reporting window
+  rw: BigInt!
+  # Dispute window
+  dw: BigInt!
+  # Market minimum duration
+  marketMinDuration: BigInt!
+  # MArket max duration
+  marketMaxDuration: BigInt!
+  # Total assets
+  totalAssets: BigInt!
+  # Total Tokens
+  totalTokens: BigInt!
   # Total markets created
   totalMarkets: BigInt!
   # total Predictions
@@ -74,6 +98,15 @@ type FactoryDayData @entity {
   participation: BigInt!
   # Total predictions
   predictions: Int!
+}
+
+type MarketToken @entity {
+  # tokenId
+  id: ID!
+  # Address of creator
+  creator: Bytes!
+
+  markets: [Market]! @derivedFrom(field: "token")
 }
 
 type Asset @entity {
@@ -244,7 +277,7 @@ type Market @entity {
   # Market duration in seconds
   duration: BigInt!
   # Market token address
-  token: Bytes!
+  token: MarketToken!
   # creation
   createdAtTimestamp: BigInt!
 
