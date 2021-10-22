@@ -17,7 +17,7 @@ type Factory @entity {
   # Minimum market liquidity
   minMarketLiquidity: BigInt!
   # Loss constant
-  lossConstant: BigInt!
+  lossConstant: Int!
   # Creator fee in percent
   creatorFee: Int!
   # Settler fee in percent

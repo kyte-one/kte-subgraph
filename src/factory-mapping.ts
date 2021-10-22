@@ -1,31 +1,11 @@
-import { Bytes, Value, BigInt, log } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 import {
-  AddAsset,
-  CreateMarket,
-  AddMarketToken,
-  UpdateMinMarketLiquidity,
-  UpdateLossConstant,
-  Init
+  AddAsset, AddMarketToken, CreateMarket, Init, UpdateLossConstant, UpdateMarketDurationParams, UpdateMarketFeesPercentage, UpdateMarketWindowParams, UpdateMinMarketLiquidity
 } from "../generated/MarketFactory/MarketFactory";
-import { Asset, Market, Factory, User, Pool, MarketToken } from '../generated/schema';
+import { Asset, Factory, Market, MarketToken, Pool, User } from '../generated/schema';
+import { MARKET_FACTORY_ADDRESS, ONE_BI, ZERO_BI } from "./constant";
+import { BigMin, createUser, formatAssetFeedType } from './utils';
 
-import { ZERO_BI, MARKET_FACTORY_ADDRESS, ONE_BI } from "./constant";
-import { formatAssetFeedType, BigMin } from './utils';
-import { UpdateMarketWindowParams, UpdateMarketDurationParams, UpdateMarketFeesPercentage } from '../generated/MarketFactory/MarketFactory';
-
-function createUser(userId: string): User {
-  let user = new User(userId);
-  user.totalMarketCreated = ZERO_BI;
-  user.totalPredictions = ZERO_BI;
-  user.totalSettled = ZERO_BI;
-  user.totalRewardClaimed = ZERO_BI;
-  user.totalPRClaimed = ZERO_BI;
-  user.totalMCRClaimed = ZERO_BI;
-  user.totalSRClaimed = ZERO_BI;
-  user.totalLoss = ZERO_BI;
-  user.totalPNL = ZERO_BI;
-  return user;
-}
 
 function createAndSavePool(
   poolId: string,
@@ -156,6 +136,7 @@ export function handleCreateMarket(event: CreateMarket): void {
 
   user.save();
   market.save();
+  factory.save();
 }
 
 export function handleAddMarketToken(event: AddMarketToken): void {

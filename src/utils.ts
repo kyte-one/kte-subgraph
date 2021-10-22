@@ -1,5 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { CreateMarket } from '../generated/MarketFactory/MarketFactory';
+import { User } from "../generated/schema";
+import { ZERO_BI } from "./constant";
 
 export function formatAssetFeedType(feedType: BigInt): string {
   if (feedType.equals(BigInt.fromString("0"))) {
@@ -23,3 +24,18 @@ export function BigMin(a: BigInt, b: BigInt): BigInt {
     }
     return a;
 }
+
+export function createUser(userId: string): User {
+    let user = new User(userId);
+    user.totalMarketCreated = ZERO_BI;
+    user.totalPredictions = ZERO_BI;
+    user.totalSettled = ZERO_BI;
+    user.totalRewardClaimed = ZERO_BI;
+    user.totalPRClaimed = ZERO_BI;
+    user.totalMCRClaimed = ZERO_BI;
+    user.totalSRClaimed = ZERO_BI;
+    user.totalLoss = ZERO_BI;
+    user.totalPNL = ZERO_BI;
+    return user;
+  }
+  
