@@ -7,10 +7,11 @@ import {
   UpdateLossConstant,
   Init
 } from "../generated/MarketFactory/MarketFactory";
-import { Asset, Market, Factory, User, Pool } from "../generated/schema";
+import { Asset, Market, Factory, User, Pool, MarketToken } from '../generated/schema';
 
 import { ZERO_BI, MARKET_FACTORY_ADDRESS, ONE_BI } from "./constant";
 import { formatAssetFeedType, BigMin } from './utils';
+import { UpdateMarketWindowParams, UpdateMarketDurationParams, UpdateMarketFeesPercentage } from '../generated/MarketFactory/MarketFactory';
 
 function createUser(userId: string): User {
   let user = new User(userId);
@@ -158,11 +159,47 @@ export function handleCreateMarket(event: CreateMarket): void {
 }
 
 export function handleAddMarketToken(event: AddMarketToken): void {
-
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  let marketToken = new MarketToken(event.params.marketToken.toString());
+  marketToken.creator = event.block.author;
+  factory.totalTokens = factory.totalTokens.plus(ONE_BI);
+  marketToken.save();
+  factory.save();
 }
 
 export function handleUpdateMinMarketLiquidity(
   event: UpdateMinMarketLiquidity
-): void {}
+): void {
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  factory.minMarketLiquidity = event.params.liquidity;
+  factory.save();
+}
 
-export function handleUpdateLossConstant(event: UpdateLossConstant): void {}
+export function handleUpdateLossConstant(event: UpdateLossConstant): void {
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  factory.lossConstant = event.params.lossConstant;
+  factory.save();
+}
+
+export function handleUpdateMarketWindowParams(event: UpdateMarketWindowParams): void {
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  factory.ww = event.params.WW;
+  factory.rw = event.params.RW;
+  factory.dw = event.params.DW;
+  factory.save();
+}
+
+export function handleUpdateMarketDurationParams(event: UpdateMarketDurationParams): void {
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  factory.marketMinDuration = event.params.marketMinDuration;
+  factory.marketMaxDuration = event.params.marketMaxDuration;
+  factory.save();
+}
+
+export function handleUpdateMarketFeesPercentage(event: UpdateMarketFeesPercentage): void {
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  factory.creatorFee = event.params.creatorFee;
+  factory.settlerFee = event.params.settlerFee;
+  factory.platformFee = event.params.platformFee;
+  factory.save();
+}
