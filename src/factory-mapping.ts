@@ -26,7 +26,7 @@ function createAndSavePool(
 function createPools(marketId: string, poolsRange: BigInt[] ): void {
   for (let i = 0; i < poolsRange.length; i++) {
     let pool = createAndSavePool(
-      i.toString(),
+      `${marketId}-${i}`,
       marketId,
       poolsRange[i],
       i === 0 ? ZERO_BI : poolsRange[i - 1]
@@ -38,7 +38,7 @@ function createPools(marketId: string, poolsRange: BigInt[] ): void {
 
   // Create last pool
   let pool = createAndSavePool(
-    lastPoolId.toString(),
+    `${marketId}-${lastPoolId}`,
     marketId,
     BigInt.fromString(Number.MAX_SAFE_INTEGER.toString()),
     poolsRange[poolsRange.length]
@@ -66,6 +66,7 @@ export function handleInit(event: Init): void {
 export function handleAddAsset(event: AddAsset): void {
   // Check if factory exists
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
 
   let asset = new Asset(event.params.id.toString());
   let assetNames = event.params.asset.toString().split(":");
@@ -87,15 +88,18 @@ export function handleAddAsset(event: AddAsset): void {
 }
 
 export function handleCreateMarket(event: CreateMarket): void {
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
+
+  factory.totalMarkets = factory.totalMarkets.plus(ONE_BI);
+  factory.totalMarketsInTrading = factory.totalMarketsInTrading.plus(ONE_BI);
+
   let userId = event.params.creator.toString();
   let assetId = event.params.assetId.toString();
   let marketId = event.params.id.toString();
   let createdAt = event.params.creationTime;
   let market = new Market(marketId);
-  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
-  factory.totalMarkets = factory.totalMarkets.plus(ONE_BI);
-  factory.totalMarketsInTrading = factory.totalMarketsInTrading.plus(ONE_BI);
-
+ 
   // Check if user exists
   let user = User.load(userId);
   if (user === null) {
@@ -141,6 +145,7 @@ export function handleCreateMarket(event: CreateMarket): void {
 
 export function handleAddMarketToken(event: AddMarketToken): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
   let marketToken = new MarketToken(event.params.marketToken.toString());
   marketToken.creator = event.block.author;
   factory.totalTokens = factory.totalTokens.plus(ONE_BI);
@@ -152,18 +157,21 @@ export function handleUpdateMinMarketLiquidity(
   event: UpdateMinMarketLiquidity
 ): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
   factory.minMarketLiquidity = event.params.liquidity;
   factory.save();
 }
 
 export function handleUpdateLossConstant(event: UpdateLossConstant): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
   factory.lossConstant = event.params.lossConstant;
   factory.save();
 }
 
 export function handleUpdateMarketWindowParams(event: UpdateMarketWindowParams): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
   factory.ww = event.params.WW;
   factory.rw = event.params.RW;
   factory.dw = event.params.DW;
@@ -172,6 +180,7 @@ export function handleUpdateMarketWindowParams(event: UpdateMarketWindowParams):
 
 export function handleUpdateMarketDurationParams(event: UpdateMarketDurationParams): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
   factory.marketMinDuration = event.params.marketMinDuration;
   factory.marketMaxDuration = event.params.marketMaxDuration;
   factory.save();
@@ -179,6 +188,7 @@ export function handleUpdateMarketDurationParams(event: UpdateMarketDurationPara
 
 export function handleUpdateMarketFeesPercentage(event: UpdateMarketFeesPercentage): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
   factory.creatorFee = event.params.creatorFee;
   factory.settlerFee = event.params.settlerFee;
   factory.platformFee = event.params.platformFee;
