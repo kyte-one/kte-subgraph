@@ -5,11 +5,9 @@ enum AssetFeedType {
 }
 
 enum Phase {
-  Trading
-  Waiting
-  Reporting
+  # Trading includes all internal phases -Trading, Waiting, Reporting
+  Trading 
   Disputed
-  ReadyToSettle
   Settled
 }
 
@@ -52,12 +50,6 @@ type Factory @entity {
   totalRewardsDistributed: BigInt!
   # Total markets in trading
   totalMarketsInTrading: BigInt!
-  # Total markets in Waiting
-  totalMarketsInWaiting: BigInt!
-  # Total markets in Reporting
-  totalMarketsInReporting: BigInt!
-  # Total markets - ready to settle
-  totalMarketsReadyToSettled: BigInt!
   # Total markets in disputes
   totalMarketsInDispute: BigInt!
   # Total markets settled
@@ -280,9 +272,14 @@ type Market @entity {
   token: MarketToken!
   # creation
   createdAtTimestamp: BigInt!
-
-  # TODO -- all Times
-
+  # trading end time
+  tradingEndTimestamp: BigInt!
+  # waiting end time
+  waitingEndTimestamp: BigInt!
+  # reporting end time
+  reportingEndTimestamp: BigInt!
+  # dispute end time
+  disputeEndTimestamp: BigInt!
   # block number created at
   createdAtBlockNumber: BigInt!
   # Winning pool

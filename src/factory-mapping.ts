@@ -5,30 +5,12 @@ import {
   AddMarketToken,
   UpdateMinMarketLiquidity,
   UpdateLossConstant,
+  Init
 } from "../generated/MarketFactory/MarketFactory";
 import { Asset, Market, Factory, User, Pool } from "../generated/schema";
 
 import { ZERO_BI, MARKET_FACTORY_ADDRESS, ONE_BI } from "./constant";
-import { formatAssetFeedType } from "./utils";
-
-function createFactory(owner: string): Factory {
-  let factory = new Factory(MARKET_FACTORY_ADDRESS);
-  factory.totalAssets = ZERO_BI;
-  factory.totalTokens = ZERO_BI;
-  factory.totalMarkets = ZERO_BI;
-  factory.totalPredictions = ZERO_BI;
-  factory.totalParticipants = ZERO_BI;
-  factory.totalParticipation = ZERO_BI;
-  factory.totalRewardsDistributed = ZERO_BI;
-  factory.totalMarketsInTrading = ZERO_BI;
-  factory.totalMarketsInWaiting = ZERO_BI;
-  factory.totalMarketsInReporting = ZERO_BI;
-  factory.totalMarketsReadyToSettled = ZERO_BI;
-  factory.totalMarketsInDispute = ZERO_BI;
-  factory.totalMarketsSettled = ZERO_BI;
-  factory.owner = owner;
-  return factory;
-}
+import { formatAssetFeedType, BigMin } from './utils';
 
 function createUser(userId: string): User {
   let user = new User(userId);
@@ -83,12 +65,26 @@ function createPools(marketId: string, poolsRange: BigInt[] ): void {
   pool.save();
 }
 
+export function handleInit(event: Init): void {
+  let factory = new Factory(MARKET_FACTORY_ADDRESS);
+  factory.owner = event.params.creator.toString();
+  // Init stats
+  factory.totalAssets = ZERO_BI;
+  factory.totalTokens = ZERO_BI;
+  factory.totalMarkets = ZERO_BI;
+  factory.totalPredictions = ZERO_BI;
+  factory.totalParticipants = ZERO_BI;
+  factory.totalParticipation = ZERO_BI;
+  factory.totalRewardsDistributed = ZERO_BI;
+  factory.totalMarketsInTrading = ZERO_BI;
+  factory.totalMarketsInDispute = ZERO_BI;
+  factory.totalMarketsSettled = ZERO_BI;
+  factory.save();
+}
+
 export function handleAddAsset(event: AddAsset): void {
   // Check if factory exists
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
-  if (factory === null) {
-    factory = createFactory(event.params.creator.toString());
-  }
 
   let asset = new Asset(event.params.id.toString());
   let assetNames = event.params.asset.toString().split(":");
@@ -113,7 +109,11 @@ export function handleCreateMarket(event: CreateMarket): void {
   let userId = event.params.creator.toString();
   let assetId = event.params.assetId.toString();
   let marketId = event.params.id.toString();
+  let createdAt = event.params.creationTime;
   let market = new Market(marketId);
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  factory.totalMarkets = factory.totalMarkets.plus(ONE_BI);
+  factory.totalMarketsInTrading = factory.totalMarketsInTrading.plus(ONE_BI);
 
   // Check if user exists
   let user = User.load(userId);
@@ -121,12 +121,19 @@ export function handleCreateMarket(event: CreateMarket): void {
     user = createUser(userId);
   }
   user.totalMarketCreated = user.totalMarketCreated.plus(ONE_BI);
+
   market.phase = "Trading";
   market.asset = assetId;
   market.duration = event.params.duration;
 
   market.token = event.params.token.toString();
-  market.createdAtTimestamp = event.block.timestamp;
+  // Market time
+  market.createdAtTimestamp = createdAt;
+  market.tradingEndTimestamp = createdAt.plus(market.duration);
+  market.reportingEndTimestamp = market.tradingEndTimestamp.plus(BigMin(factory.rw, market.duration));
+  market.waitingEndTimestamp = market.reportingEndTimestamp.plus(BigMin(factory.ww, market.duration));
+  market.disputeEndTimestamp = market.reportingEndTimestamp.plus(factory.dw);
+
   market.createdAtBlockNumber = event.block.number;
   market.liquidity = event.params.liquidity;
 

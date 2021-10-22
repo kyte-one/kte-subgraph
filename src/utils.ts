@@ -1,4 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
+import { CreateMarket } from '../generated/MarketFactory/MarketFactory';
 
 export function formatAssetFeedType(feedType: BigInt): string {
   if (feedType.equals(BigInt.fromString("0"))) {
@@ -14,4 +15,11 @@ export function formatAssetFeedType(feedType: BigInt): string {
   }
 
   return "Price";
+}
+
+export function BigMin(a: BigInt, b: BigInt): BigInt {
+    if (a.gt(b)) {
+        return b;
+    }
+    return a;
 }
