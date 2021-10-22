@@ -4,9 +4,15 @@ import {
   DistributeMarketFee,
   ClaimReturns,
 } from "../generated/templates/Market/Market";
-import { MarketPrediction, User, Factory, Pool } from "../generated/schema";
+import {
+  MarketPrediction,
+  User,
+  Factory,
+  Pool,
+  Market,
+} from "../generated/schema";
 import { createUser } from "./utils";
-import { MARKET_FACTORY_ADDRESS, ONE_BI } from "./constant";
+import { MARKET_FACTORY_ADDRESS, ONE_BI, ZERO_BI } from "./constant";
 import { BigInt } from "@graphprotocol/graph-ts";
 
 export function handlePlacePrediction(event: PlacePrediction): void {
@@ -18,7 +24,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
 
   // Load market
   let marketId = event.params.market.toString();
-  let market = Factory.load(marketId);
+  let market = Market.load(marketId);
   if (!market) return;
 
   // Load pool
@@ -65,7 +71,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
     amount
       .times(BigInt.fromI32(leverage))
       .times(BigInt.fromI32(factory.lossConstant))
-      .div(BigInt.fromString('100'))
+      .div(BigInt.fromString("100"))
   );
 
   // Save changes
@@ -76,7 +82,49 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   factory.save();
 }
 
-export function handleSettleMarket(event: SettleMarket): void {}
+export function handleSettleMarket(event: SettleMarket): void {
+  // Load factory
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
+
+  // Load market
+  let marketId = event.params.market.toString();
+  let market = Market.load(marketId);
+  if (!market) return;
+
+  // Load pool
+  let poolId = `${marketId}-${event.params.winningPool}`;
+  let pool = Pool.load(poolId);
+  if (!pool) return;
+
+  // Load or create new user
+  let userId = event.params.settler.toString();
+  let user = User.load(userId);
+  if (user === null) {
+    user = createUser(userId);
+  }
+
+  user.totalSettled = user.totalSettled.plus(ONE_BI);
+
+  pool.winningPool = true;
+
+  market.winningPool = poolId;
+  market.settler = event.params.settler;
+  market.creatorReward = event.params.creatorReward;
+  market.platformReward = event.params.platformReward;
+  market.settlerReward = event.params.settlerReward;
+  market.usersRewardPool = event.params.usersRewardPool;
+
+  factory.totalMarketsSettled = factory.totalMarketsSettled.plus(ONE_BI);
+  if (factory.totalMarketsInTrading.gt(ZERO_BI)) {
+    factory.totalMarketsInTrading = factory.totalMarketsInTrading.minus(ONE_BI);
+  }
+
+  user.save();
+  pool.save();
+  market.save();
+  factory.save();
+}
 
 export function handleDistributeMarketFee(event: DistributeMarketFee): void {}
 

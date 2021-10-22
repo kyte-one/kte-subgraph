@@ -300,6 +300,16 @@ type Market @entity {
   settlerFee: Int!
   # Platform fee in percent
   platformFee: Int!
+  # Reward pool
+  rewardPool: BigInt!
+  # Market Creator rewards
+  creatorReward: BigInt!
+  # Platform rewards
+  platformReward: BigInt!
+  # Market settler rewards
+  settlerReward: BigInt!
+  # User reward pool
+  usersRewardPool: BigInt!
   # Market creator address
   creator: Bytes!
   # Market settler address
@@ -310,6 +320,7 @@ type Market @entity {
   settlementRewardClaimed: Boolean!
   # platform reward claimed
   platformRewardClaimed: Boolean!
+
   
   pools: [Pool!]! @derivedFrom(field: "market")
   predictions: [MarketPrediction!]! @derivedFrom(field: "market")

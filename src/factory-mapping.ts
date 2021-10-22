@@ -49,17 +49,6 @@ function createPools(marketId: string, poolsRange: BigInt[] ): void {
 export function handleInit(event: Init): void {
   let factory = new Factory(MARKET_FACTORY_ADDRESS);
   factory.owner = event.params.creator.toString();
-  // Init stats
-  factory.totalAssets = ZERO_BI;
-  factory.totalTokens = ZERO_BI;
-  factory.totalMarkets = ZERO_BI;
-  factory.totalPredictions = ZERO_BI;
-  factory.totalParticipants = ZERO_BI;
-  factory.totalParticipation = ZERO_BI;
-  factory.totalRewardsDistributed = ZERO_BI;
-  factory.totalMarketsInTrading = ZERO_BI;
-  factory.totalMarketsInDispute = ZERO_BI;
-  factory.totalMarketsSettled = ZERO_BI;
   factory.save();
 }
 
@@ -76,11 +65,6 @@ export function handleAddAsset(event: AddAsset): void {
   asset.decimals = event.params.decimals;
   asset.assetFeedType = formatAssetFeedType(BigInt.fromI32(event.params.assetFeedType));
   asset.assetFeed = event.params.assetFeed;
-  asset.totalMarkets = ZERO_BI;
-  asset.totalPredictions = ZERO_BI;
-  asset.totalParticipants = ZERO_BI;
-  asset.totalParticipation = ZERO_BI;
-  asset.totalRewardsDistributed = ZERO_BI;
 
   factory.totalAssets = factory.totalAssets.plus(ONE_BI);
   asset.save();
@@ -122,18 +106,9 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.createdAtBlockNumber = event.block.number;
   market.liquidity = event.params.liquidity;
 
-  market.totalPredictions = ZERO_BI;
-  market.totalParticipants = ZERO_BI;
-  market.totalParticipation = ZERO_BI;
-  market.totalRewardsDistributed = ZERO_BI;
-
   market.creationFee = event.params.creatorFee;
   market.settlerFee = event.params.settlerFee;
   market.platformFee = event.params.platformFee;
-
-  market.creationRewardClaimed = false;
-  market.settlementRewardClaimed = false;
-  market.platformRewardClaimed = false;
 
   // Create market pools
   createPools(marketId, event.params.poolsRange);
