@@ -12,9 +12,9 @@ import {
   Market,
 } from "../generated/schema";
 import { createMarketUser, createUser } from "./utils";
-import { MARKET_FACTORY_ADDRESS, ONE_BI, ZERO_BI, TWO_BI } from './constant';
+import { MARKET_FACTORY_ADDRESS, ONE_BI, ZERO_BI, TWO_BI } from "./constant";
 import { BigInt } from "@graphprotocol/graph-ts";
-import { MarketUser } from '../generated/schema';
+import { MarketUser } from "../generated/schema";
 
 export function handlePlacePrediction(event: PlacePrediction): void {
   let amount = event.params.amount;
@@ -27,7 +27,6 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   let marketId = event.params.market.toString();
   let market = Market.load(marketId);
   if (!market) return;
-
 
   // Load or create new user
   let userId = event.params.user.toString();
@@ -44,10 +43,10 @@ export function handlePlacePrediction(event: PlacePrediction): void {
     marketUser = createMarketUser(userId, marketId);
   }
 
-   // Load pool
-   let poolId = `${marketId}-${event.params.prediction}`;
-   let pool = Pool.load(poolId);
-   if (!pool) return;
+  // Load pool
+  let poolId = `${marketId}-${event.params.prediction}`;
+  let pool = Pool.load(poolId);
+  if (!pool) return;
 
   // Create new prediction
   let predictionId =
@@ -75,7 +74,9 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   market.totalPredictions = factory.totalPredictions.plus(ONE_BI);
 
   // Update market user stats
-  marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(amount);
+  marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(
+    amount
+  );
 
   // Update pool stats
   pool.staked = pool.staked.plus(amount);
@@ -124,7 +125,6 @@ export function handleSettleMarket(event: SettleMarket): void {
     marketUser = createMarketUser(userId, marketId);
   }
 
-
   user.totalSettled = user.totalSettled.plus(ONE_BI);
 
   pool.winningPool = true;
@@ -151,40 +151,67 @@ export function handleSettleMarket(event: SettleMarket): void {
 }
 
 export function handleDistributeMarketFee(event: DistributeMarketFee): void {
-    // Load market
+  // Load market
   let marketId = event.params.market.toString();
   let market = Market.load(marketId);
   if (!market) return;
 
-
   // Load or create new user
   let userId = event.params.user.toString();
   let user = User.load(userId);
-  if (user === null) {
+  if (!user) {
     user = createUser(userId);
   }
 
-   // Load market user
-   let marketUserId = `${marketId}-${userId}`;
-   let marketUser = MarketUser.load(marketUserId);
-   if (!marketUser) {
-     marketUser = createMarketUser(userId, marketId);
-   }
+  // Load market user
+  let marketUserId = `${marketId}-${userId}`;
+  let marketUser = MarketUser.load(marketUserId);
+  if (!marketUser) {
+    marketUser = createMarketUser(userId, marketId);
+  }
 
-   let awardType = BigInt.fromI32(event.params.awardType);
+  // 0: Creator, 1: Settler, 2: platform
+  let awardType = BigInt.fromI32(event.params.awardType);
+  let reward = event.params.amount;
 
-   if (awardType.gt(TWO_BI)) {
-       return;
-   }
+  if (awardType.gt(TWO_BI)) {
+    return;
+  }
 
-   if (awardType.equals(ZERO_BI)) {
-   } else if (awardType.equals(ONE_BI)) {
+  if (awardType.equals(ZERO_BI)) {
+    // update market user
+    marketUser.creationRewardClaimed = true;
+    marketUser.creationReward = reward;
 
-   } else {
+    // update market
+    market.creationRewardClaimed = true;
+    market.creatorReward = reward;
 
-   }
+    // Update user
+    user.totalMarketCreationRewardClaimed = user.totalMarketCreationRewardClaimed.plus(reward);
+    user.totalRewardClaimed = user.totalRewardClaimed.plus(reward);
+  } else if (awardType.equals(ONE_BI)) {
+    // update market user
+    marketUser.settlementRewardClaimed = true;
+    marketUser.creationReward = reward;
+
+    // update market
+    market.settlementRewardClaimed = true;
+    market.settlerReward = reward;
+
+    // Update user
+    user.totalSettlementRewardClaimed = user.totalSettlementRewardClaimed.plus(reward);
+    user.totalRewardClaimed = user.totalRewardClaimed.plus(reward);
+  } else {
+    // update market
+    market.platformRewardClaimed = true;
+    market.platformReward = reward;
+  }
 
 
+  market.save();
+  marketUser.save();
+  user.save();
 }
 
 export function handleClaimReturns(event: ClaimReturns): void {}

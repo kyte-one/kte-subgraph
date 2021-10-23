@@ -176,8 +176,14 @@ type User @entity {
   totalPredictions: BigInt!
   # total market settled by user
   totalSettled: BigInt!
-  # total reward claimed (correct prediction + creation + settle)
+  # total reward claimed (correct prediction + settlement + creation)
   totalRewardClaimed: BigInt!
+  # total prediction reward claimed 
+  totalPredictionRewardClaimed: BigInt!
+   # Total market creation reward
+  totalMarketCreationRewardClaimed: BigInt!
+   # total market settlement reward
+  totalSettlementRewardClaimed: BigInt!
   # Total prediction rewards
   totalPRClaimed: BigInt!
   # Total market creation rewards
@@ -192,8 +198,10 @@ type User @entity {
   userDayData: [UserDayData!]! @derivedFrom(field: "user")
   # monthly user predictions snapshots
   userMonthData: [UserMonthData!]! @derivedFrom(field: "user")
-  # User predictions
+  # User all predictions
   predictions: [MarketPrediction!]! @derivedFrom(field: "user")
+  # User market information
+  marketUsers: [MarketUser!]! @derivedFrom(field: "user")
 }
 
 type UserDayData @entity {
@@ -228,7 +236,7 @@ type MarketUser @entity {
   isMarketCreator: Boolean!
   # Is user market settler
   isMarketSettler: Boolean!
-  # Total returns
+  # Total returns - It does not include creation reward and settlement reward
   totalReturns: BigInt!
   # Total participation amount
   totalParticipationAmount: BigInt!# rewards claimed
