@@ -218,8 +218,38 @@ type UserMonthData @entity {
   pnl:  BigInt!
 }
 
+type MarketUser @entity {
+  id: ID!
+  # User pointer
+  user: User!
+  # Market pointer
+  market: Market!
+  # Is user market creator
+  isMarketCreator: Boolean!
+  # Is user market settler
+  isMarketSettler: Boolean!
+  # Total returns
+  totalReturns: BigInt!
+  # Total participation amount
+  totalParticipationAmount: BigInt!# rewards claimed
+  # Reward claimed
+  returnsClaimed: Boolean!
+  # Market Creator rewards
+  creationReward: BigInt!
+  # Market settler rewards
+  settlementReward: BigInt!
+  # Creation reward claimed
+  creationRewardClaimed: Boolean!
+  # Settlement reward claimed
+  settlementRewardClaimed: Boolean!
+  # User market predictions
+  predictions: [MarketPrediction!]! @derivedFrom(field: "marketUser")
+}
+
 type MarketPrediction @entity {
   id: ID!
+  # Market user id
+  marketUser: MarketUser!
   # User pointer
   user: User!
   # Market pointer
@@ -236,8 +266,6 @@ type MarketPrediction @entity {
   boostMode: Boolean!
   # prediction timestamp
   timestamp: BigInt!
-  # rewards claimed
-  rewardClaimed: Boolean!
 }
 
 type Pool @entity {
@@ -320,8 +348,9 @@ type Market @entity {
   settlementRewardClaimed: Boolean!
   # platform reward claimed
   platformRewardClaimed: Boolean!
+  # Loss constant
+  lossConstant: Int!
 
-  
   pools: [Pool!]! @derivedFrom(field: "market")
   predictions: [MarketPrediction!]! @derivedFrom(field: "market")
 }

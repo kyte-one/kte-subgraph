@@ -106,9 +106,10 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.createdAtBlockNumber = event.block.number;
   market.liquidity = event.params.liquidity;
 
-  market.creationFee = event.params.creatorFee;
-  market.settlerFee = event.params.settlerFee;
-  market.platformFee = event.params.platformFee;
+  market.creationFee = factory.creatorFee;
+  market.settlerFee = factory.settlerFee;
+  market.platformFee = factory.platformFee;
+  market.lossConstant = factory.lossConstant;
 
   // Create market pools
   createPools(marketId, event.params.poolsRange);
