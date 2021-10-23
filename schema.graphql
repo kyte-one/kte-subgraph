@@ -176,6 +176,8 @@ type User @entity {
   totalPredictions: BigInt!
   # total market settled by user
   totalSettled: BigInt!
+  # Total participation amount
+  totalParticipationAmount: BigInt!
   # total reward claimed (correct prediction + settlement + creation)
   totalRewardClaimed: BigInt!
   # total prediction reward claimed 
@@ -184,12 +186,6 @@ type User @entity {
   totalMarketCreationRewardClaimed: BigInt!
    # total market settlement reward
   totalSettlementRewardClaimed: BigInt!
-  # Total prediction rewards
-  totalPRClaimed: BigInt!
-  # Total market creation rewards
-  totalMCRClaimed: BigInt!
-  # Total market settle rewards
-  totalSRClaimed: BigInt!
   # Total loss
   totalLoss: BigInt!
   # total profit and loss
@@ -236,11 +232,11 @@ type MarketUser @entity {
   isMarketCreator: Boolean!
   # Is user market settler
   isMarketSettler: Boolean!
-  # Total returns - It does not include creation reward and settlement reward
+  # Total returns - Does not include creation and settlement reward
   totalReturns: BigInt!
   # Total participation amount
-  totalParticipationAmount: BigInt!# rewards claimed
-  # Reward claimed
+  totalParticipationAmount: BigInt!
+  # Returns claimed (Prediction amount +/- Prediction reward / loss)
   returnsClaimed: Boolean!
   # Market Creator rewards
   creationReward: BigInt!
