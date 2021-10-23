@@ -40,6 +40,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   let marketUserId = `${marketId}-${userId}`;
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
+    market.totalParticipants = market.totalParticipants + 1;
     marketUser = createMarketUser(userId, marketId);
   }
 
@@ -67,12 +68,13 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   factory.totalPredictions = factory.totalPredictions.plus(ONE_BI);
 
   // Update user stats
-  user.totalPredictions = user.totalPredictions.plus(ONE_BI);
+  user.totalPredictions = user.totalPredictions + 1;
   user.totalParticipationAmount = user.totalParticipationAmount.plus(amount);
+  user.numReturnsPending =  user.numReturnsPending + 1;
 
   // Update market stats
-  market.totalParticipation = factory.totalParticipation.plus(amount);
-  market.totalPredictions = factory.totalPredictions.plus(ONE_BI);
+  market.totalParticipation = market.totalParticipation.plus(amount);
+  market.totalPredictions = market.totalPredictions + 1;
 
   // Update market user stats
   marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(
@@ -126,7 +128,7 @@ export function handleSettleMarket(event: SettleMarket): void {
     marketUser = createMarketUser(userId, marketId);
   }
 
-  user.totalSettled = user.totalSettled.plus(ONE_BI);
+  user.totalSettled = user.totalSettled + 1;
 
   pool.winningPool = true;
 
@@ -139,9 +141,9 @@ export function handleSettleMarket(event: SettleMarket): void {
 
   marketUser.isMarketSettler = true;
 
-  factory.totalMarketsSettled = factory.totalMarketsSettled.plus(ONE_BI);
-  if (factory.totalMarketsInTrading.gt(ZERO_BI)) {
-    factory.totalMarketsInTrading = factory.totalMarketsInTrading.minus(ONE_BI);
+  factory.totalMarketsSettled = factory.totalMarketsSettled + 1;
+  if (factory.totalMarketsInTrading > 0) {
+    factory.totalMarketsInTrading = factory.totalMarketsInTrading - 1;
   }
 
   user.save();
@@ -248,10 +250,15 @@ export function handleClaimReturns(event: ClaimReturns): void {
   marketUser.totalReturns = totalReturns;
   marketUser.returnsClaimed = true;
 
+ 
+  user.totalReturnsClaimed = user.totalReturnsClaimed.plus(totalReturns);
   if (profitLoss.ge(ZERO_BI)) {
     user.totalRewardClaimed = user.totalRewardClaimed.plus(profitLoss);
   }
   user.totalPNL = user.totalPNL.plus(profitLoss);
+  if (user.numReturnsPending > 0) {
+    user.numReturnsPending =  user.numReturnsPending - 1;
+  }
 
   user.save();
   marketUser.save();

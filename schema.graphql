@@ -35,11 +35,11 @@ type Factory @entity {
   # MArket max duration
   marketMaxDuration: BigInt!
   # Total assets
-  totalAssets: BigInt!
+  totalAssets: Int!
   # Total Tokens
-  totalTokens: BigInt!
+  totalTokens: Int!
   # Total markets created
-  totalMarkets: BigInt!
+  totalMarkets: Int!
   # total Predictions
   totalPredictions: BigInt!
   # Total market participants
@@ -49,11 +49,11 @@ type Factory @entity {
   # Total rewards distribute
   totalRewardsDistributed: BigInt!
   # Total markets in trading
-  totalMarketsInTrading: BigInt!
+  totalMarketsInTrading: Int!
   # Total markets in disputes
-  totalMarketsInDispute: BigInt!
+  totalMarketsInDispute: Int!
   # Total markets settled
-  totalMarketsSettled: BigInt!
+  totalMarketsSettled: Int!
   # current owner of the factory
   owner: ID!
   # Hourly factory snapshots
@@ -171,13 +171,17 @@ type User @entity {
   # Avatar
   avatar: String
   # user total market created
-  totalMarketCreated: BigInt!
+  totalMarketCreated: Int!
   # user total predictions
-  totalPredictions: BigInt!
+  totalPredictions: Int!
   # total market settled by user
-  totalSettled: BigInt!
+  totalSettled: Int!
+  # Number of returns pending
+  numReturnsPending: Int!
   # Total participation amount
   totalParticipationAmount: BigInt!
+  # Total returns claimed
+  totalReturnsClaimed: BigInt!
   # total reward claimed (correct prediction + settlement + creation)
   totalRewardClaimed: BigInt!
   # total prediction reward claimed 
@@ -319,9 +323,9 @@ type Market @entity {
   # Initial market liquidity
   liquidity: BigInt!
   # total Predictions
-  totalPredictions: BigInt!
+  totalPredictions: Int!
   # Total market participants
-  totalParticipants: BigInt!
+  totalParticipants: Int!
   # Total participation
   totalParticipation: BigInt!
   # Total rewards distribute

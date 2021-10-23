@@ -66,7 +66,7 @@ export function handleAddAsset(event: AddAsset): void {
   asset.assetFeedType = formatAssetFeedType(BigInt.fromI32(event.params.assetFeedType));
   asset.assetFeed = event.params.assetFeed;
 
-  factory.totalAssets = factory.totalAssets.plus(ONE_BI);
+  factory.totalAssets = factory.totalAssets + 1;
   asset.save();
   factory.save();
 }
@@ -75,8 +75,8 @@ export function handleCreateMarket(event: CreateMarket): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
 
-  factory.totalMarkets = factory.totalMarkets.plus(ONE_BI);
-  factory.totalMarketsInTrading = factory.totalMarketsInTrading.plus(ONE_BI);
+  factory.totalMarkets = factory.totalMarkets + 1;
+  factory.totalMarketsInTrading = factory.totalMarketsInTrading + 1;
 
   let userId = event.params.creator.toString();
   let assetId = event.params.assetId.toString();
@@ -89,7 +89,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   if (user === null) {
     user = createUser(userId);
   }
-  user.totalMarketCreated = user.totalMarketCreated.plus(ONE_BI);
+  user.totalMarketCreated = user.totalMarketCreated + 1;
 
   market.phase = "Trading";
   market.asset = assetId;
@@ -124,7 +124,7 @@ export function handleAddMarketToken(event: AddMarketToken): void {
   if (!factory) return;
   let marketToken = new MarketToken(event.params.marketToken.toString());
   marketToken.creator = event.block.author;
-  factory.totalTokens = factory.totalTokens.plus(ONE_BI);
+  factory.totalTokens = factory.totalTokens + 1;
   marketToken.save();
   factory.save();
 }
