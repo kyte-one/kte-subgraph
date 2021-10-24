@@ -68,13 +68,13 @@ type FactoryHourData @entity {
   # Factory pointer
   factory: Factory!
   # unix timestamp for start of hour
-  periodStartUnix: Int!
+  timestamp: Int!
   # Total participants
   participants: Int!
   # Total Participation
   participation: BigInt!
   # Total predictions
-  predictions: Int!
+  predictions: BigInt!
 }
 
 type FactoryDayData @entity {
@@ -83,7 +83,7 @@ type FactoryDayData @entity {
   # Factory pointer
   factory: Factory!
   # timestamp rounded to current day by dividing by 86400
-  date: Int!
+  timestamp: Int!
   # Total participants
   participants: Int!
   # Total Participation
