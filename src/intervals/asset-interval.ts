@@ -4,7 +4,7 @@ import { Asset, AssetDayData, AssetHourData } from "../../generated/schema";
 export function updateAssetHourData(
   event: ethereum.Event,
   assetId: string
-): AssetHourData {
+): void {
   let asset = Asset.load(assetId);
   if (!asset) return;
 
@@ -23,13 +23,12 @@ export function updateAssetHourData(
   assetHourData.rewards = asset.totalRewards;
 
   assetHourData.save();
-  return assetHourData;
 }
 
 export function updateAssetDayData(
   event: ethereum.Event,
   assetId: string
-): AssetDayData {
+): void {
   let asset = Asset.load(assetId);
   if (!asset) return;
 
@@ -49,6 +48,4 @@ export function updateAssetDayData(
   assetDayData.rewards = asset.totalRewards;
 
   assetDayData.save();
-
-  return assetDayData;
 }

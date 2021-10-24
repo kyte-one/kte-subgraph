@@ -4,7 +4,7 @@ import { User, UserDayData, UserMonthData } from "../../generated/schema";
 export function updateUserDayData(
   event: ethereum.Event,
   userId: string
-): UserDayData {
+): void {
   let user = User.load(userId);
   if (!user) return;
 
@@ -21,14 +21,12 @@ export function updateUserDayData(
 
   userDayData.pnl = user.totalPNL;
   userDayData.save();
-
-  return userDayData;
 }
 
 export function updateUserMonthData(
   event: ethereum.Event,
   userId: string
-): UserMonthData {
+): void {
   let user = User.load(userId);
   if (!user) return;
 
@@ -46,5 +44,4 @@ export function updateUserMonthData(
   userMonthData.pnl = user.totalPNL;
 
   userMonthData.save();
-  return userMonthData;
 }

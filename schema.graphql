@@ -70,7 +70,7 @@ type FactoryHourData @entity {
   # unix timestamp for start of hour
   timestamp: Int!
   # Total participants
-  participants: Int!
+  participants: BigInt!
   # Total Participation
   participation: BigInt!
   # Total predictions
@@ -85,11 +85,11 @@ type FactoryDayData @entity {
   # timestamp rounded to current day by dividing by 86400
   timestamp: Int!
   # Total participants
-  participants: Int!
+  participants: BigInt!
   # Total Participation
   participation: BigInt!
   # Total predictions
-  predictions: Int!
+  predictions: BigInt!
 }
 
 type MarketToken @entity {
@@ -143,7 +143,7 @@ type AssetHourData @entity {
   # Total Participation
   participation: BigInt!
   # Total predictions
-  predictions: Int!
+  predictions: BigInt!
   # Total rewards 
   rewards: BigInt!
 }
@@ -158,7 +158,7 @@ type AssetDayData @entity {
   # Total Participation
   participation: BigInt!
   # Total predictions
-  predictions: Int!
+  predictions: BigInt!
   # Total rewards
   rewards: BigInt!
 }
