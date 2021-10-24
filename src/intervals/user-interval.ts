@@ -1,10 +1,7 @@
-import { ethereum } from "@graphprotocol/graph-ts";
-import { User, UserDayData, UserMonthData } from "../../generated/schema";
+import { ethereum } from '@graphprotocol/graph-ts';
+import { User, UserDayData, UserMonthData } from '../../generated/schema';
 
-export function updateUserDayData(
-  event: ethereum.Event,
-  userId: string
-): void {
+export function updateUserDayData(event: ethereum.Event, userId: string): void {
   let user = User.load(userId);
   if (!user) return;
 
@@ -23,10 +20,7 @@ export function updateUserDayData(
   userDayData.save();
 }
 
-export function updateUserMonthData(
-  event: ethereum.Event,
-  userId: string
-): void {
+export function updateUserMonthData(event: ethereum.Event, userId: string): void {
   let user = User.load(userId);
   if (!user) return;
 

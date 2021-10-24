@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt } from '@graphprotocol/graph-ts';
 import {
   AddAsset,
   AddMarketToken,
@@ -9,32 +9,14 @@ import {
   UpdateMarketFeesPercentage,
   UpdateMarketWindowParams,
   UpdateMinMarketLiquidity,
-} from "../generated/MarketFactory/MarketFactory";
-import {
-  Asset,
-  Factory,
-  Market,
-  MarketToken,
-  Pool,
-  User,
-} from "../generated/schema";
-import { MARKET_FACTORY_ADDRESS, ZERO_BI } from "./constant";
-import {
-  updateAssetDayData,
-  updateAssetHourData,
-} from "./intervals/asset-interval";
-import {
-  updateFactoryDayData,
-  updateFactoryHourData,
-} from "./intervals/factory-interval";
-import { BigMin, createUser, formatAssetFeedType } from "./utils";
+} from '../generated/MarketFactory/MarketFactory';
+import { Asset, Factory, Market, MarketToken, Pool, User } from '../generated/schema';
+import { MARKET_FACTORY_ADDRESS, ZERO_BI } from './constant';
+import { updateAssetDayData, updateAssetHourData } from './intervals/asset-interval';
+import { updateFactoryDayData, updateFactoryHourData } from './intervals/factory-interval';
+import { BigMin, createUser, formatAssetFeedType } from './utils';
 
-function createAndSavePool(
-  poolId: string,
-  marketId: string,
-  upper: BigInt,
-  lower: BigInt
-): Pool {
+function createAndSavePool(poolId: string, marketId: string, upper: BigInt, lower: BigInt): Pool {
   let pool = new Pool(poolId);
   pool.market = marketId;
   pool.upper = upper;
@@ -47,12 +29,7 @@ function createAndSavePool(
 
 function createPools(marketId: string, poolsRange: BigInt[]): void {
   for (let i = 0; i < poolsRange.length; i++) {
-    let pool = createAndSavePool(
-      `${marketId}-${i}`,
-      marketId,
-      poolsRange[i],
-      i === 0 ? ZERO_BI : poolsRange[i - 1]
-    );
+    let pool = createAndSavePool(`${marketId}-${i}`, marketId, poolsRange[i], i === 0 ? ZERO_BI : poolsRange[i - 1]);
     pool.save();
   }
 
@@ -80,14 +57,12 @@ export function handleAddAsset(event: AddAsset): void {
   if (!factory) return;
 
   let asset = new Asset(event.params.id.toString());
-  let assetNames = event.params.asset.toString().split(":");
+  let assetNames = event.params.asset.toString().split(':');
   asset.asset0 = assetNames[0];
   asset.asset1 = assetNames[1];
   asset.creator = event.params.creator;
   asset.decimals = event.params.decimals;
-  asset.assetFeedType = formatAssetFeedType(
-    BigInt.fromI32(event.params.assetFeedType)
-  );
+  asset.assetFeedType = formatAssetFeedType(BigInt.fromI32(event.params.assetFeedType));
   asset.assetFeed = event.params.assetFeed;
 
   factory.totalAssets = factory.totalAssets + 1;
@@ -126,7 +101,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   }
   user.totalMarketCreated = user.totalMarketCreated + 1;
 
-  market.phase = "Trading";
+  market.phase = 'Trading';
   market.asset = assetId;
   market.duration = event.params.duration;
 
@@ -134,12 +109,8 @@ export function handleCreateMarket(event: CreateMarket): void {
   // Market time
   market.createdAtTimestamp = createdAt;
   market.tradingEndTimestamp = createdAt.plus(market.duration);
-  market.reportingEndTimestamp = market.tradingEndTimestamp.plus(
-    BigMin(factory.rw, market.duration)
-  );
-  market.waitingEndTimestamp = market.reportingEndTimestamp.plus(
-    BigMin(factory.ww, market.duration)
-  );
+  market.reportingEndTimestamp = market.tradingEndTimestamp.plus(BigMin(factory.rw, market.duration));
+  market.waitingEndTimestamp = market.reportingEndTimestamp.plus(BigMin(factory.ww, market.duration));
   market.disputeEndTimestamp = market.reportingEndTimestamp.plus(factory.dw);
 
   market.createdAtBlockNumber = event.block.number;
@@ -173,9 +144,7 @@ export function handleAddMarketToken(event: AddMarketToken): void {
   factory.save();
 }
 
-export function handleUpdateMinMarketLiquidity(
-  event: UpdateMinMarketLiquidity
-): void {
+export function handleUpdateMinMarketLiquidity(event: UpdateMinMarketLiquidity): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
   factory.minMarketLiquidity = event.params.liquidity;
@@ -189,9 +158,7 @@ export function handleUpdateLossConstant(event: UpdateLossConstant): void {
   factory.save();
 }
 
-export function handleUpdateMarketWindowParams(
-  event: UpdateMarketWindowParams
-): void {
+export function handleUpdateMarketWindowParams(event: UpdateMarketWindowParams): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
   factory.ww = event.params.WW;
@@ -200,9 +167,7 @@ export function handleUpdateMarketWindowParams(
   factory.save();
 }
 
-export function handleUpdateMarketDurationParams(
-  event: UpdateMarketDurationParams
-): void {
+export function handleUpdateMarketDurationParams(event: UpdateMarketDurationParams): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
   factory.marketMinDuration = event.params.marketMinDuration;
@@ -210,9 +175,7 @@ export function handleUpdateMarketDurationParams(
   factory.save();
 }
 
-export function handleUpdateMarketFeesPercentage(
-  event: UpdateMarketFeesPercentage
-): void {
+export function handleUpdateMarketFeesPercentage(event: UpdateMarketFeesPercentage): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
   factory.creatorFee = event.params.creatorFee;

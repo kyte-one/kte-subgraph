@@ -7,11 +7,13 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy Kyte-Research/kyte-one-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy suryasingh/kyte-one-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+    "deploy-local": "graph deploy suryasingh/kyte-one-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "format": "prettier --config ./.prettierrc --write '**/*.{js,ts,tsx,scss,css,md,json,graphql}'"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.22.4",
-    "@graphprotocol/graph-ts": "^0.22.1"
+    "@graphprotocol/graph-ts": "^0.22.1",
+    "prettier": "^2.4.1"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

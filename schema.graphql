@@ -6,7 +6,7 @@ enum AssetFeedType {
 
 enum Phase {
   # Trading includes all internal phases -Trading, Waiting, Reporting
-  Trading 
+  Trading
   Disputed
   Settled
 }
@@ -117,7 +117,7 @@ type Asset @entity {
   # Asset feed address
   assetFeed: Bytes!
 
-   # Total markets created
+  # Total markets created
   totalMarkets: Int!
   # total Predictions
   totalPredictions: BigInt!
@@ -144,7 +144,7 @@ type AssetHourData @entity {
   participation: BigInt!
   # Total predictions
   predictions: BigInt!
-  # Total rewards 
+  # Total rewards
   rewards: BigInt!
 }
 
@@ -182,11 +182,11 @@ type User @entity {
   totalReturnsClaimed: BigInt!
   # total reward claimed (correct prediction + settlement + creation)
   totalRewardsClaimed: BigInt!
-  # total prediction reward claimed 
+  # total prediction reward claimed
   totalPredictionRewardClaimed: BigInt!
-   # Total market creation reward
+  # Total market creation reward
   totalMarketCreationRewardClaimed: BigInt!
-   # total market settlement reward
+  # total market settlement reward
   totalSettlementRewardClaimed: BigInt!
   # Total loss
   totalLoss: BigInt!
@@ -210,7 +210,7 @@ type UserDayData @entity {
   # timestamp rounded to current day by dividing by 86400
   timestamp: Int!
   # Profit and loss
-  pnl:  BigInt!
+  pnl: BigInt!
 }
 
 type UserMonthData @entity {
@@ -221,7 +221,7 @@ type UserMonthData @entity {
   # timestamp rounded to current month by dividing by 86400
   timestamp: Int!
   # Profit and loss
-  pnl:  BigInt!
+  pnl: BigInt!
 }
 
 type MarketUser @entity {
@@ -293,7 +293,6 @@ type Pool @entity {
   predictions: [MarketPrediction!]! @derivedFrom(field: "pool")
 }
 
-
 type Market @entity {
   id: ID!
   # Market phase
@@ -358,4 +357,3 @@ type Market @entity {
   pools: [Pool!]! @derivedFrom(field: "market")
   predictions: [MarketPrediction!]! @derivedFrom(field: "market")
 }
-

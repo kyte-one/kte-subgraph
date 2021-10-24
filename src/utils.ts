@@ -1,21 +1,21 @@
-import { BigInt } from "@graphprotocol/graph-ts";
-import { User, MarketUser } from "../generated/schema";
-import { ZERO_BI, ONE_BI, TWO_BI } from "./constant";
+import { BigInt } from '@graphprotocol/graph-ts';
+import { User, MarketUser } from '../generated/schema';
+import { ZERO_BI, ONE_BI, TWO_BI } from './constant';
 
 export function formatAssetFeedType(feedType: BigInt): string {
   if (feedType.equals(ZERO_BI)) {
-    return "Price";
+    return 'Price';
   }
 
   if (feedType.equals(ONE_BI)) {
-    return "Volume";
+    return 'Volume';
   }
 
   if (feedType.equals(TWO_BI)) {
-    return "Rank";
+    return 'Rank';
   }
 
-  return "Price";
+  return 'Price';
 }
 
 export function BigMin(a: BigInt, b: BigInt): BigInt {

@@ -1,33 +1,11 @@
-import { BigInt } from "@graphprotocol/graph-ts";
-import {
-  Asset,
-  Factory,
-  Market,
-  MarketPrediction,
-  MarketUser,
-  Pool,
-  User,
-} from "../generated/schema";
-import {
-  ClaimReturns,
-  DistributeMarketFee,
-  PlacePrediction,
-  SettleMarket,
-} from "../generated/templates/Market/Market";
-import { MARKET_FACTORY_ADDRESS, ONE_BI, TWO_BI, ZERO_BI } from "./constant";
-import {
-  updateAssetDayData,
-  updateAssetHourData,
-} from "./intervals/asset-interval";
-import {
-  updateFactoryDayData,
-  updateFactoryHourData,
-} from "./intervals/factory-interval";
-import {
-  updateUserDayData,
-  updateUserMonthData,
-} from "./intervals/user-interval";
-import { createMarketUser, createUser } from "./utils";
+import { BigInt } from '@graphprotocol/graph-ts';
+import { Asset, Factory, Market, MarketPrediction, MarketUser, Pool, User } from '../generated/schema';
+import { ClaimReturns, DistributeMarketFee, PlacePrediction, SettleMarket } from '../generated/templates/Market/Market';
+import { MARKET_FACTORY_ADDRESS, ONE_BI, TWO_BI, ZERO_BI } from './constant';
+import { updateAssetDayData, updateAssetHourData } from './intervals/asset-interval';
+import { updateFactoryDayData, updateFactoryHourData } from './intervals/factory-interval';
+import { updateUserDayData, updateUserMonthData } from './intervals/user-interval';
+import { createMarketUser, createUser } from './utils';
 
 export function handlePlacePrediction(event: PlacePrediction): void {
   let amount = event.params.amount;
@@ -69,8 +47,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   if (!pool) return;
 
   // Create new prediction
-  let predictionId =
-    event.transaction.hash.toHex() + "-" + event.logIndex.toString();
+  let predictionId = event.transaction.hash.toHex() + '-' + event.logIndex.toString();
   let marketPrediction = new MarketPrediction(predictionId);
   marketPrediction.market = marketId;
   marketPrediction.marketUser = marketUserId;
@@ -100,17 +77,12 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   asset.totalPredictions = asset.totalPredictions.plus(ONE_BI);
 
   // Update market user stats
-  marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(
-    amount
-  );
+  marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(amount);
 
   // Update pool stats
   pool.staked = pool.staked.plus(amount);
   pool.rewards = pool.rewards.plus(
-    amount
-      .times(BigInt.fromI32(leverage))
-      .times(BigInt.fromI32(market.lossConstant))
-      .div(BigInt.fromString("100"))
+    amount.times(BigInt.fromI32(leverage)).times(BigInt.fromI32(market.lossConstant)).div(BigInt.fromString('100'))
   );
 
   updateAssetDayData(event, market.asset);
@@ -234,9 +206,7 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
     market.creationRewardClaimed = true;
 
     // Update user
-    user.totalMarketCreationRewardClaimed = user.totalMarketCreationRewardClaimed.plus(
-      reward
-    );
+    user.totalMarketCreationRewardClaimed = user.totalMarketCreationRewardClaimed.plus(reward);
   } else if (awardType.equals(ONE_BI)) {
     // update market user
     marketUser.settlementRewardClaimed = true;
@@ -246,9 +216,7 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
     market.settlementRewardClaimed = true;
 
     // Update user
-    user.totalSettlementRewardClaimed = user.totalSettlementRewardClaimed.plus(
-      reward
-    );
+    user.totalSettlementRewardClaimed = user.totalSettlementRewardClaimed.plus(reward);
   } else {
     // update market
     market.platformRewardClaimed = true;

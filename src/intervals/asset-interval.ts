@@ -1,17 +1,14 @@
-import { ethereum } from "@graphprotocol/graph-ts";
-import { Asset, AssetDayData, AssetHourData } from "../../generated/schema";
+import { ethereum } from '@graphprotocol/graph-ts';
+import { Asset, AssetDayData, AssetHourData } from '../../generated/schema';
 
-export function updateAssetHourData(
-  event: ethereum.Event,
-  assetId: string
-): void {
+export function updateAssetHourData(event: ethereum.Event, assetId: string): void {
   let asset = Asset.load(assetId);
   if (!asset) return;
 
   let timestamp = event.block.timestamp.toI32();
   let hourIndex = timestamp / 3600; // get unique hour within unix history
   let hourStartUnix = hourIndex * 3600; // want the rounded effect
-  let assetHourId = assetId.concat("-").concat(hourIndex.toString());
+  let assetHourId = assetId.concat('-').concat(hourIndex.toString());
   let assetHourData = AssetHourData.load(assetHourId);
   if (!assetHourData) {
     assetHourData = new AssetHourData(assetHourId);
@@ -25,10 +22,7 @@ export function updateAssetHourData(
   assetHourData.save();
 }
 
-export function updateAssetDayData(
-  event: ethereum.Event,
-  assetId: string
-): void {
+export function updateAssetDayData(event: ethereum.Event, assetId: string): void {
   let asset = Asset.load(assetId);
   if (!asset) return;
 
