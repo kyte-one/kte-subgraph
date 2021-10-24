@@ -1,6 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { User, MarketUser } from '../generated/schema';
-import { ZERO_BI, ONE_BI, TWO_BI } from './constant';
+import { User, MarketUser } from "../generated/schema";
+import { ZERO_BI, ONE_BI, TWO_BI } from "./constant";
 
 export function formatAssetFeedType(feedType: BigInt): string {
   if (feedType.equals(ZERO_BI)) {
@@ -31,9 +31,9 @@ export function createUser(userId: string): User {
 }
 
 export function createMarketUser(userId: string, marketId: string): MarketUser {
-    let marketUserId = `${marketId}-${userId}`;
-    let marketUser = new MarketUser(marketUserId);
-    marketUser.user = userId;
-    marketUser.market = marketId;
-    return marketUser;
+  let marketUserId = `${marketId}-${userId}`;
+  let marketUser = new MarketUser(marketUserId);
+  marketUser.user = userId;
+  marketUser.market = marketId;
+  return marketUser;
 }

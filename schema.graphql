@@ -326,8 +326,6 @@ type Market @entity {
   totalParticipants: Int!
   # Total participation
   totalParticipation: BigInt!
-  # Total rewards distributed
-  totalRewardsDistributed: BigInt!
   # Market creator fee in percent
   creationFee: Int!
   # Market settler fee in percent

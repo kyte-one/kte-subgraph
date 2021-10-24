@@ -240,7 +240,6 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
 }
 
 export function handleClaimReturns(event: ClaimReturns): void {
-  // Load market
   let marketId = event.params.market.toString();
 
   // Load or create new user

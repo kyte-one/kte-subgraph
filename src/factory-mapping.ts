@@ -1,11 +1,25 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import {
-  AddAsset, AddMarketToken, CreateMarket, Init, UpdateLossConstant, UpdateMarketDurationParams, UpdateMarketFeesPercentage, UpdateMarketWindowParams, UpdateMinMarketLiquidity
+  AddAsset,
+  AddMarketToken,
+  CreateMarket,
+  Init,
+  UpdateLossConstant,
+  UpdateMarketDurationParams,
+  UpdateMarketFeesPercentage,
+  UpdateMarketWindowParams,
+  UpdateMinMarketLiquidity,
 } from "../generated/MarketFactory/MarketFactory";
-import { Asset, Factory, Market, MarketToken, Pool, User } from '../generated/schema';
+import {
+  Asset,
+  Factory,
+  Market,
+  MarketToken,
+  Pool,
+  User,
+} from "../generated/schema";
 import { MARKET_FACTORY_ADDRESS, ONE_BI, ZERO_BI } from "./constant";
-import { BigMin, createUser, formatAssetFeedType } from './utils';
-
+import { BigMin, createUser, formatAssetFeedType } from "./utils";
 
 function createAndSavePool(
   poolId: string,
@@ -23,7 +37,7 @@ function createAndSavePool(
   return pool;
 }
 
-function createPools(marketId: string, poolsRange: BigInt[] ): void {
+function createPools(marketId: string, poolsRange: BigInt[]): void {
   for (let i = 0; i < poolsRange.length; i++) {
     let pool = createAndSavePool(
       `${marketId}-${i}`,
@@ -63,7 +77,9 @@ export function handleAddAsset(event: AddAsset): void {
   asset.asset1 = assetNames[1];
   asset.creator = event.params.creator;
   asset.decimals = event.params.decimals;
-  asset.assetFeedType = formatAssetFeedType(BigInt.fromI32(event.params.assetFeedType));
+  asset.assetFeedType = formatAssetFeedType(
+    BigInt.fromI32(event.params.assetFeedType)
+  );
   asset.assetFeed = event.params.assetFeed;
 
   factory.totalAssets = factory.totalAssets + 1;
@@ -90,7 +106,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   asset.totalMarkets = asset.totalMarkets + 1;
 
   let market = new Market(marketId);
- 
+
   // Check if user exists
   let user = User.load(userId);
   if (!user) {
@@ -106,8 +122,12 @@ export function handleCreateMarket(event: CreateMarket): void {
   // Market time
   market.createdAtTimestamp = createdAt;
   market.tradingEndTimestamp = createdAt.plus(market.duration);
-  market.reportingEndTimestamp = market.tradingEndTimestamp.plus(BigMin(factory.rw, market.duration));
-  market.waitingEndTimestamp = market.reportingEndTimestamp.plus(BigMin(factory.ww, market.duration));
+  market.reportingEndTimestamp = market.tradingEndTimestamp.plus(
+    BigMin(factory.rw, market.duration)
+  );
+  market.waitingEndTimestamp = market.reportingEndTimestamp.plus(
+    BigMin(factory.ww, market.duration)
+  );
   market.disputeEndTimestamp = market.reportingEndTimestamp.plus(factory.dw);
 
   market.createdAtBlockNumber = event.block.number;
@@ -152,7 +172,9 @@ export function handleUpdateLossConstant(event: UpdateLossConstant): void {
   factory.save();
 }
 
-export function handleUpdateMarketWindowParams(event: UpdateMarketWindowParams): void {
+export function handleUpdateMarketWindowParams(
+  event: UpdateMarketWindowParams
+): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
   factory.ww = event.params.WW;
@@ -161,7 +183,9 @@ export function handleUpdateMarketWindowParams(event: UpdateMarketWindowParams):
   factory.save();
 }
 
-export function handleUpdateMarketDurationParams(event: UpdateMarketDurationParams): void {
+export function handleUpdateMarketDurationParams(
+  event: UpdateMarketDurationParams
+): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
   factory.marketMinDuration = event.params.marketMinDuration;
@@ -169,7 +193,9 @@ export function handleUpdateMarketDurationParams(event: UpdateMarketDurationPara
   factory.save();
 }
 
-export function handleUpdateMarketFeesPercentage(event: UpdateMarketFeesPercentage): void {
+export function handleUpdateMarketFeesPercentage(
+  event: UpdateMarketFeesPercentage
+): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
   factory.creatorFee = event.params.creatorFee;
