@@ -46,8 +46,8 @@ type Factory @entity {
   totalParticipants: BigInt!
   # Total participation
   totalParticipation: BigInt!
-  # Total rewards distribute
-  totalRewardsDistributed: BigInt!
+  # Total rewards
+  totalRewards: BigInt!
   # Total markets in trading
   totalMarketsInTrading: Int!
   # Total markets in disputes
@@ -118,15 +118,13 @@ type Asset @entity {
   assetFeed: Bytes!
 
    # Total markets created
-  totalMarkets: BigInt!
+  totalMarkets: Int!
   # total Predictions
   totalPredictions: BigInt!
-  # Total market participants
-  totalParticipants: BigInt!
   # Total participation
   totalParticipation: BigInt!
   # Total rewards distribute
-  totalRewardsDistributed: BigInt!
+  totalRewards: BigInt!
 
   markets: [Market!]! @derivedFrom(field: "asset")
   # Hourly asset snapshots
@@ -141,13 +139,13 @@ type AssetHourData @entity {
   # Asset pointer
   asset: Asset!
   # unix timestamp for start of hour
-  periodStartUnix: Int!
-  # Total participants
-  participants: Int!
+  timestamp: Int!
   # Total Participation
   participation: BigInt!
   # Total predictions
   predictions: Int!
+  # Total rewards 
+  rewards: BigInt!
 }
 
 type AssetDayData @entity {
@@ -156,13 +154,13 @@ type AssetDayData @entity {
   # Asset pointer
   asset: Asset!
   # timestamp rounded to current day by dividing by 86400
-  date: Int!
-  # Total participants
-  participants: Int!
+  timestamp: Int!
   # Total Participation
   participation: BigInt!
   # Total predictions
   predictions: Int!
+  # Total rewards
+  rewards: BigInt!
 }
 
 type User @entity {
@@ -183,7 +181,7 @@ type User @entity {
   # Total returns claimed
   totalReturnsClaimed: BigInt!
   # total reward claimed (correct prediction + settlement + creation)
-  totalRewardClaimed: BigInt!
+  totalRewardsClaimed: BigInt!
   # total prediction reward claimed 
   totalPredictionRewardClaimed: BigInt!
    # Total market creation reward
@@ -210,7 +208,7 @@ type UserDayData @entity {
   # User pointer
   user: User!
   # timestamp rounded to current day by dividing by 86400
-  date: Int!
+  timestamp: Int!
   # Profit and loss
   pnl:  BigInt!
 }
@@ -221,7 +219,7 @@ type UserMonthData @entity {
   # User pointer
   user: User!
   # timestamp rounded to current month by dividing by 86400
-  date: Int!
+  timestamp: Int!
   # Profit and loss
   pnl:  BigInt!
 }
@@ -328,7 +326,7 @@ type Market @entity {
   totalParticipants: Int!
   # Total participation
   totalParticipation: BigInt!
-  # Total rewards distribute
+  # Total rewards distributed
   totalRewardsDistributed: BigInt!
   # Market creator fee in percent
   creationFee: Int!

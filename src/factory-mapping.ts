@@ -82,11 +82,18 @@ export function handleCreateMarket(event: CreateMarket): void {
   let assetId = event.params.assetId.toString();
   let marketId = event.params.id.toString();
   let createdAt = event.params.creationTime;
+
+  let asset = Asset.load(assetId);
+  if (!asset) {
+    return;
+  }
+  asset.totalMarkets = asset.totalMarkets + 1;
+
   let market = new Market(marketId);
  
   // Check if user exists
   let user = User.load(userId);
-  if (user === null) {
+  if (!user) {
     user = createUser(userId);
   }
   user.totalMarketCreated = user.totalMarketCreated + 1;
