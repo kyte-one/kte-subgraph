@@ -8,7 +8,7 @@ dataSources:
     name: MarketFactory
     network: mainnet
     source:
-      address: '0xc5a5C42992dECbae36851359345FE25997F5C42d'
+      address: '0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf'
       abi: MarketFactory
     mapping:
       kind: ethereum/events

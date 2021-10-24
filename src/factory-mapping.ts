@@ -46,8 +46,21 @@ function createPools(marketId: string, poolsRange: BigInt[]): void {
 }
 
 export function handleInit(event: Init): void {
-  let factory = new Factory(MARKET_FACTORY_ADDRESS);
-  factory.owner = event.params.creator.toString();
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) {
+    factory = new Factory(MARKET_FACTORY_ADDRESS);
+  }
+  factory.owner = event.params.creator.toHexString();
+  factory.ww = event.params.WW;
+  factory.rw = event.params.RW;
+  factory.dw = event.params.DW;
+  factory.minMarketLiquidity = event.params.minMarketLiquidity;
+  factory.marketMinDuration = event.params.marketMinDuration;
+  factory.marketMaxDuration = event.params.marketMaxDuration;
+  factory.creatorFee = event.params.creatorFee;
+  factory.settlerFee = event.params.settlerFee;
+  factory.platformFee = event.params.platformFee;
+  factory.lossConstant = event.params.lossConstant;
   factory.save();
 }
 
@@ -81,9 +94,9 @@ export function handleCreateMarket(event: CreateMarket): void {
   factory.totalMarkets = factory.totalMarkets + 1;
   factory.totalMarketsInTrading = factory.totalMarketsInTrading + 1;
 
-  let userId = event.params.creator.toString();
+  let userId = event.params.creator.toHexString();
   let assetId = event.params.assetId.toString();
-  let marketId = event.params.id.toString();
+  let marketId = event.params.id.toHexString();
   let createdAt = event.params.creationTime;
 
   let asset = Asset.load(assetId);
@@ -105,7 +118,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.asset = assetId;
   market.duration = event.params.duration;
 
-  market.token = event.params.token.toString();
+  market.token = event.params.token.toHexString();
   // Market time
   market.createdAtTimestamp = createdAt;
   market.tradingEndTimestamp = createdAt.plus(market.duration);
@@ -137,7 +150,7 @@ export function handleCreateMarket(event: CreateMarket): void {
 export function handleAddMarketToken(event: AddMarketToken): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
-  let marketToken = new MarketToken(event.params.marketToken.toString());
+  let marketToken = new MarketToken(event.params.marketToken.toHexString());
   marketToken.creator = event.block.author;
   factory.totalTokens = factory.totalTokens + 1;
   marketToken.save();

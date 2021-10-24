@@ -15,7 +15,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   if (!factory) return;
 
   // Load market
-  let marketId = event.params.market.toString();
+  let marketId = event.params.market.toHexString();
   let market = Market.load(marketId);
   if (!market) return;
 
@@ -26,7 +26,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   }
 
   // Load or create new user
-  let userId = event.params.user.toString();
+  let userId = event.params.user.toHexString();
   let user = User.load(userId);
   if (!user) {
     factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
@@ -106,7 +106,7 @@ export function handleSettleMarket(event: SettleMarket): void {
   if (!factory) return;
 
   // Load market
-  let marketId = event.params.market.toString();
+  let marketId = event.params.market.toHexString();
   let market = Market.load(marketId);
   if (!market) return;
 
@@ -116,7 +116,7 @@ export function handleSettleMarket(event: SettleMarket): void {
   if (!pool) return;
 
   // Load or create new user
-  let userId = event.params.settler.toString();
+  let userId = event.params.settler.toHexString();
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
@@ -171,12 +171,12 @@ export function handleSettleMarket(event: SettleMarket): void {
 
 export function handleDistributeMarketFee(event: DistributeMarketFee): void {
   // Load market
-  let marketId = event.params.market.toString();
+  let marketId = event.params.market.toHexString();
   let market = Market.load(marketId);
   if (!market) return;
 
   // Load or create new user
-  let userId = event.params.user.toString();
+  let userId = event.params.user.toHexString();
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
@@ -233,10 +233,10 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
 }
 
 export function handleClaimReturns(event: ClaimReturns): void {
-  let marketId = event.params.market.toString();
+  let marketId = event.params.market.toHexString();
 
   // Load or create new user
-  let userId = event.params.user.toString();
+  let userId = event.params.user.toHexString();
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
