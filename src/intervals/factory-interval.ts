@@ -6,7 +6,7 @@ import {
 } from "../../generated/schema";
 import { MARKET_FACTORY_ADDRESS } from "../constant";
 
-export function updateFactoryHourData(event: ethereum.Event) {
+export function updateFactoryHourData(event: ethereum.Event): FactoryHourData {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
 
@@ -26,9 +26,10 @@ export function updateFactoryHourData(event: ethereum.Event) {
   factoryHourData.participants = factory.totalParticipants;
 
   factoryHourData.save();
+  return factoryHourData;
 }
 
-export function updateFactoryDayData(event: ethereum.Event) {
+export function updateFactoryDayData(event: ethereum.Event): FactoryDayData {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
 
@@ -47,4 +48,6 @@ export function updateFactoryDayData(event: ethereum.Event) {
   factoryDayData.predictions = factory.totalPredictions;
   factoryDayData.participants = factory.totalParticipants;
   factoryDayData.save();
+
+  return factoryDayData;
 }

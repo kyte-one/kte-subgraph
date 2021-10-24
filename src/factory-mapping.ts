@@ -18,7 +18,15 @@ import {
   Pool,
   User,
 } from "../generated/schema";
-import { MARKET_FACTORY_ADDRESS, ONE_BI, ZERO_BI } from "./constant";
+import { MARKET_FACTORY_ADDRESS, ZERO_BI } from "./constant";
+import {
+  updateAssetDayData,
+  updateAssetHourData,
+} from "./intervals/asset-interval";
+import {
+  updateFactoryDayData,
+  updateFactoryHourData,
+} from "./intervals/factory-interval";
 import { BigMin, createUser, formatAssetFeedType } from "./utils";
 
 function createAndSavePool(
@@ -83,6 +91,10 @@ export function handleAddAsset(event: AddAsset): void {
   asset.assetFeed = event.params.assetFeed;
 
   factory.totalAssets = factory.totalAssets + 1;
+
+  updateFactoryHourData(event);
+  updateFactoryDayData(event);
+
   asset.save();
   factory.save();
 }
@@ -140,6 +152,11 @@ export function handleCreateMarket(event: CreateMarket): void {
 
   // Create market pools
   createPools(marketId, event.params.poolsRange);
+
+  updateAssetDayData(event, assetId);
+  updateAssetHourData(event, assetId);
+  updateFactoryHourData(event);
+  updateFactoryDayData(event);
 
   user.save();
   market.save();

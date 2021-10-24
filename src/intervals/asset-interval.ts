@@ -1,7 +1,10 @@
 import { ethereum } from "@graphprotocol/graph-ts";
 import { Asset, AssetDayData, AssetHourData } from "../../generated/schema";
 
-export function updateAssetHourData(event: ethereum.Event, assetId: string) {
+export function updateAssetHourData(
+  event: ethereum.Event,
+  assetId: string
+): AssetHourData {
   let asset = Asset.load(assetId);
   if (!asset) return;
 
@@ -20,9 +23,13 @@ export function updateAssetHourData(event: ethereum.Event, assetId: string) {
   assetHourData.rewards = asset.totalRewards;
 
   assetHourData.save();
+  return assetHourData;
 }
 
-export function updateAssetDayData(event: ethereum.Event, assetId: string) {
+export function updateAssetDayData(
+  event: ethereum.Event,
+  assetId: string
+): AssetDayData {
   let asset = Asset.load(assetId);
   if (!asset) return;
 
@@ -42,4 +49,6 @@ export function updateAssetDayData(event: ethereum.Event, assetId: string) {
   assetDayData.rewards = asset.totalRewards;
 
   assetDayData.save();
+
+  return assetDayData;
 }
