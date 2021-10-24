@@ -14,6 +14,7 @@ export function updateFactoryHourData(event: ethereum.Event): void {
   if (!factoryHourData) {
     factoryHourData = new FactoryHourData(factoryHourId);
     factoryHourData.timestamp = hourStartUnix;
+    factoryHourData.factory = factory.id;
   }
   factoryHourData.participation = factory.totalParticipation;
   factoryHourData.predictions = factory.totalPredictions;
@@ -35,6 +36,7 @@ export function updateFactoryDayData(event: ethereum.Event): void {
   if (!factoryDayData) {
     factoryDayData = new FactoryDayData(dayId.toString());
     factoryDayData.timestamp = dayStartTimestamp;
+    factoryDayData.factory = factory.id;
   }
 
   factoryDayData.participation = factory.totalParticipation;

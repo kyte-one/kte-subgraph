@@ -120,6 +120,7 @@ export function handleSettleMarket(event: SettleMarket): void {
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
+    factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
   }
 
   //   Load asset
@@ -170,6 +171,10 @@ export function handleSettleMarket(event: SettleMarket): void {
 }
 
 export function handleDistributeMarketFee(event: DistributeMarketFee): void {
+    // Load factory
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
+
   // Load market
   let marketId = event.params.market.toHexString();
   let market = Market.load(marketId);
@@ -180,6 +185,7 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
+    factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
   }
 
   // Load market user
@@ -230,9 +236,15 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
   market.save();
   marketUser.save();
   user.save();
+  factory.save();
 }
 
 export function handleClaimReturns(event: ClaimReturns): void {
+     // Load factory
+  let factory = Factory.load(MARKET_FACTORY_ADDRESS);
+  if (!factory) return;
+
+
   let marketId = event.params.market.toHexString();
 
   // Load or create new user
@@ -240,6 +252,7 @@ export function handleClaimReturns(event: ClaimReturns): void {
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
+    factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
   }
 
   // Load market user
@@ -269,4 +282,5 @@ export function handleClaimReturns(event: ClaimReturns): void {
 
   user.save();
   marketUser.save();
+  factory.save();
 }

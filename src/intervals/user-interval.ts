@@ -14,6 +14,7 @@ export function updateUserDayData(event: ethereum.Event, userId: string): void {
   if (!userDayData) {
     userDayData = new UserDayData(dayId.toString());
     userDayData.timestamp = dayStartTimestamp;
+    userDayData.user = user.id;
   }
 
   userDayData.pnl = user.totalPNL;
@@ -33,6 +34,7 @@ export function updateUserMonthData(event: ethereum.Event, userId: string): void
   if (!userMonthData) {
     userMonthData = new UserMonthData(monthId.toString());
     userMonthData.timestamp = monthStartTimestamp;
+    userMonthData.user = user.id;
   }
 
   userMonthData.pnl = user.totalPNL;

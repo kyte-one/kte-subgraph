@@ -13,6 +13,7 @@ export function updateAssetHourData(event: ethereum.Event, assetId: string): voi
   if (!assetHourData) {
     assetHourData = new AssetHourData(assetHourId);
     assetHourData.timestamp = hourStartUnix;
+    assetHourData.asset = asset.id;
   }
 
   assetHourData.participation = asset.totalParticipation;
@@ -35,6 +36,7 @@ export function updateAssetDayData(event: ethereum.Event, assetId: string): void
   if (!assetDayData) {
     assetDayData = new AssetDayData(dayId.toString());
     assetDayData.timestamp = dayStartTimestamp;
+    assetDayData.asset = asset.id;
   }
 
   assetDayData.participation = asset.totalParticipation;

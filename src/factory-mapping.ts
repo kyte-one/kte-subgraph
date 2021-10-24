@@ -12,7 +12,7 @@ import {
 } from '../generated/MarketFactory/MarketFactory';
 import { Asset, Factory, Market, MarketToken, Pool, User } from '../generated/schema';
 import {  Market as MarketTemplate } from '../generated/templates';
-import { MARKET_FACTORY_ADDRESS, ZERO_BI, INFINITE_BI } from './constant';
+import { MARKET_FACTORY_ADDRESS, ZERO_BI, INFINITE_BI, ONE_BI } from './constant';
 import { updateAssetDayData, updateAssetHourData } from './intervals/asset-interval';
 import { updateFactoryDayData, updateFactoryHourData } from './intervals/factory-interval';
 import { BigMin, createUser, formatAssetFeedType } from './utils';
@@ -110,6 +110,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
+    factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
   }
   user.totalMarketCreated = user.totalMarketCreated + 1;
 
