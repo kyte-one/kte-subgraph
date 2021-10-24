@@ -8,7 +8,7 @@ dataSources:
     name: MarketFactory
     network: mainnet
     source:
-      address: '0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf'
+      address: '0x1c85638e118b37167e9298c2268758e058DdfDA0'
       abi: MarketFactory
     mapping:
       kind: ethereum/events
@@ -16,10 +16,14 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Factory
+        - FactoryHourData
+        - FactoryDayData
         - Asset
         - AssetHourData
         - AssetDayData
         - Market
+        - User
+        - MarketUser
       abis:
         - name: MarketFactory
           file: ./abis/MarketFactory.json
@@ -58,7 +62,7 @@ templates:
       language: wasm/assemblyscript
       file: ./src/market-mapping.ts
       entities:
-        - MarketPrediction
+        - Market
       abis:
         - name: Market
           file: ./abis/Market.json

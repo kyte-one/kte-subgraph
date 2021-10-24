@@ -11,7 +11,8 @@ import {
   UpdateMinMarketLiquidity,
 } from '../generated/MarketFactory/MarketFactory';
 import { Asset, Factory, Market, MarketToken, Pool, User } from '../generated/schema';
-import { MARKET_FACTORY_ADDRESS, ZERO_BI } from './constant';
+import {  Market as MarketTemplate } from '../generated/templates';
+import { MARKET_FACTORY_ADDRESS, ZERO_BI, INFINITE_BI } from './constant';
 import { updateAssetDayData, updateAssetHourData } from './intervals/asset-interval';
 import { updateFactoryDayData, updateFactoryHourData } from './intervals/factory-interval';
 import { BigMin, createUser, formatAssetFeedType } from './utils';
@@ -33,14 +34,12 @@ function createPools(marketId: string, poolsRange: BigInt[]): void {
     pool.save();
   }
 
-  let lastPoolId = poolsRange.length + 1;
-
   // Create last pool
   let pool = createAndSavePool(
-    `${marketId}-${lastPoolId}`,
+    `${marketId}-${poolsRange.length}`,
     marketId,
-    BigInt.fromString(Number.MAX_SAFE_INTEGER.toString()),
-    poolsRange[poolsRange.length]
+    INFINITE_BI,
+    poolsRange[poolsRange.length - 1]
   );
   pool.save();
 }
@@ -142,6 +141,8 @@ export function handleCreateMarket(event: CreateMarket): void {
   updateFactoryHourData(event);
   updateFactoryDayData(event);
 
+  // create the tracked contract based on the template
+  MarketTemplate.create(event.params.id);
   user.save();
   market.save();
   factory.save();
