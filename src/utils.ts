@@ -18,10 +18,8 @@ export function formatAssetFeedType(feedType: BigInt): string {
   return 'Price';
 }
 
-export function BigMin(a: BigInt, b: BigInt): BigInt {
-  if (a.gt(b)) {
-    return b;
-  }
+export function i32Min(a: i32, b: i32): i32 {
+  if (a > b) return b;
   return a;
 }
 

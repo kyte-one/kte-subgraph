@@ -11,11 +11,11 @@ import {
   UpdateMinMarketLiquidity,
 } from '../generated/MarketFactory/MarketFactory';
 import { Asset, Factory, Market, MarketToken, Pool, User } from '../generated/schema';
-import {  Market as MarketTemplate } from '../generated/templates';
-import { MARKET_FACTORY_ADDRESS, ZERO_BI, INFINITE_BI, ONE_BI } from './constant';
+import { Market as MarketTemplate } from '../generated/templates';
+import { INFINITE_BI, MARKET_FACTORY_ADDRESS, ONE_BI, ZERO_BI } from './constant';
 import { updateAssetDayData, updateAssetHourData } from './intervals/asset-interval';
 import { updateFactoryDayData, updateFactoryHourData } from './intervals/factory-interval';
-import { BigMin, createUser, formatAssetFeedType } from './utils';
+import { createUser, formatAssetFeedType, i32Min } from './utils';
 
 function createAndSavePool(poolId: string, marketId: string, upper: BigInt, lower: BigInt): Pool {
   let pool = new Pool(poolId);
@@ -50,12 +50,12 @@ export function handleInit(event: Init): void {
     factory = new Factory(MARKET_FACTORY_ADDRESS);
   }
   factory.owner = event.params.creator.toHexString();
-  factory.ww = event.params.WW;
-  factory.rw = event.params.RW;
-  factory.dw = event.params.DW;
+  factory.waitingWindow = event.params.WW.toI32();
+  factory.reportingWindow = event.params.RW.toI32();
+  factory.disputeWindow = event.params.DW.toI32();
   factory.minMarketLiquidity = event.params.minMarketLiquidity;
-  factory.marketMinDuration = event.params.marketMinDuration;
-  factory.marketMaxDuration = event.params.marketMaxDuration;
+  factory.marketMinDuration = event.params.marketMinDuration.toI32();
+  factory.marketMaxDuration = event.params.marketMaxDuration.toI32();
   factory.creatorFee = event.params.creatorFee;
   factory.settlerFee = event.params.settlerFee;
   factory.platformFee = event.params.platformFee;
@@ -96,7 +96,8 @@ export function handleCreateMarket(event: CreateMarket): void {
   let userId = event.params.creator.toHexString();
   let assetId = event.params.assetId.toString();
   let marketId = event.params.id.toHexString();
-  let createdAt = event.params.creationTime;
+  let createdAt = event.params.creationTime.toI32();
+  let duration = event.params.duration.toI32();
 
   let asset = Asset.load(assetId);
   if (!asset) {
@@ -110,21 +111,21 @@ export function handleCreateMarket(event: CreateMarket): void {
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
-    factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
+    factory.totalParticipants = factory.totalParticipants + 1;
   }
   user.totalMarketCreated = user.totalMarketCreated + 1;
 
   market.phase = 'Trading';
   market.asset = assetId;
-  market.duration = event.params.duration;
+  market.duration = duration;
 
   market.token = event.params.token.toHexString();
   // Market time
   market.createdAtTimestamp = createdAt;
-  market.tradingEndTimestamp = createdAt.plus(market.duration);
-  market.reportingEndTimestamp = market.tradingEndTimestamp.plus(BigMin(factory.rw, market.duration));
-  market.waitingEndTimestamp = market.reportingEndTimestamp.plus(BigMin(factory.ww, market.duration));
-  market.disputeEndTimestamp = market.reportingEndTimestamp.plus(factory.dw);
+  market.tradingEndTimestamp = createdAt + duration;
+  market.reportingEndTimestamp = market.tradingEndTimestamp + i32Min(factory.reportingWindow, duration);
+  market.waitingEndTimestamp = market.reportingEndTimestamp + i32Min(factory.waitingWindow, duration);
+  market.disputeEndTimestamp = market.reportingEndTimestamp + factory.disputeWindow;
 
   market.createdAtBlockNumber = event.block.number;
   market.liquidity = event.params.liquidity;
@@ -176,17 +177,17 @@ export function handleUpdateLossConstant(event: UpdateLossConstant): void {
 export function handleUpdateMarketWindowParams(event: UpdateMarketWindowParams): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
-  factory.ww = event.params.WW;
-  factory.rw = event.params.RW;
-  factory.dw = event.params.DW;
+  factory.waitingWindow = event.params.WW.toI32();
+  factory.reportingWindow = event.params.RW.toI32();
+  factory.disputeWindow = event.params.DW.toI32();
   factory.save();
 }
 
 export function handleUpdateMarketDurationParams(event: UpdateMarketDurationParams): void {
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
-  factory.marketMinDuration = event.params.marketMinDuration;
-  factory.marketMaxDuration = event.params.marketMaxDuration;
+  factory.marketMinDuration = event.params.marketMinDuration.toI32();
+  factory.marketMaxDuration = event.params.marketMaxDuration.toI32();
   factory.save();
 }
 

@@ -25,15 +25,15 @@ type Factory @entity {
   # Platform fee in percent
   platformFee: Int!
   # Waiting window
-  ww: BigInt!
+  waitingWindow: Int!
   # Reporting window
-  rw: BigInt!
+  reportingWindow: Int!
   # Dispute window
-  dw: BigInt!
+  disputeWindow: Int!
   # Market minimum duration
-  marketMinDuration: BigInt!
+  marketMinDuration: Int!
   # MArket max duration
-  marketMaxDuration: BigInt!
+  marketMaxDuration: Int!
   # Total assets
   totalAssets: Int!
   # Total Tokens
@@ -41,9 +41,9 @@ type Factory @entity {
   # Total markets created
   totalMarkets: Int!
   # total Predictions
-  totalPredictions: BigInt!
+  totalPredictions: Int!
   # Total market participants
-  totalParticipants: BigInt!
+  totalParticipants: Int!
   # Total participation
   totalParticipation: BigInt!
   # Total rewards
@@ -70,11 +70,11 @@ type FactoryHourData @entity {
   # unix timestamp for start of hour
   timestamp: Int!
   # Total participants
-  participants: BigInt!
+  participants: Int!
   # Total Participation
   participation: BigInt!
   # Total predictions
-  predictions: BigInt!
+  predictions: Int!
 }
 
 type FactoryDayData @entity {
@@ -85,11 +85,11 @@ type FactoryDayData @entity {
   # timestamp rounded to current day by dividing by 86400
   timestamp: Int!
   # Total participants
-  participants: BigInt!
+  participants: Int!
   # Total Participation
   participation: BigInt!
   # Total predictions
-  predictions: BigInt!
+  predictions: Int!
 }
 
 type MarketToken @entity {
@@ -120,7 +120,7 @@ type Asset @entity {
   # Total markets created
   totalMarkets: Int!
   # total Predictions
-  totalPredictions: BigInt!
+  totalPredictions: Int!
   # Total participation
   totalParticipation: BigInt!
   # Total rewards distribute
@@ -143,7 +143,7 @@ type AssetHourData @entity {
   # Total Participation
   participation: BigInt!
   # Total predictions
-  predictions: BigInt!
+  predictions: Int!
   # Total rewards
   rewards: BigInt!
 }
@@ -158,7 +158,7 @@ type AssetDayData @entity {
   # Total Participation
   participation: BigInt!
   # Total predictions
-  predictions: BigInt!
+  predictions: Int!
   # Total rewards
   rewards: BigInt!
 }
@@ -300,19 +300,19 @@ type Market @entity {
   # Market asset
   asset: Asset!
   # Market duration in seconds
-  duration: BigInt!
+  duration: Int!
   # Market token address
   token: MarketToken!
   # creation
-  createdAtTimestamp: BigInt!
+  createdAtTimestamp: Int!
   # trading end time
-  tradingEndTimestamp: BigInt!
+  tradingEndTimestamp: Int!
   # waiting end time
-  waitingEndTimestamp: BigInt!
+  waitingEndTimestamp: Int!
   # reporting end time
-  reportingEndTimestamp: BigInt!
+  reportingEndTimestamp: Int!
   # dispute end time
-  disputeEndTimestamp: BigInt!
+  disputeEndTimestamp: Int!
   # block number created at
   createdAtBlockNumber: BigInt!
   # Winning pool

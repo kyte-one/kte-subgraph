@@ -29,7 +29,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   let userId = event.params.user.toHexString();
   let user = User.load(userId);
   if (!user) {
-    factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
+    factory.totalParticipants = factory.totalParticipants + 1;
     user = createUser(userId);
   }
 
@@ -61,7 +61,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
 
   // Update factory stats
   factory.totalParticipation = factory.totalParticipation.plus(amount);
-  factory.totalPredictions = factory.totalPredictions.plus(ONE_BI);
+  factory.totalPredictions = factory.totalPredictions + 1;
 
   // Update user stats
   user.totalPredictions = user.totalPredictions + 1;
@@ -74,7 +74,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
 
   // Update assets
   asset.totalParticipation = asset.totalParticipation.plus(amount);
-  asset.totalPredictions = asset.totalPredictions.plus(ONE_BI);
+  asset.totalPredictions = asset.totalPredictions + 1;
 
   // Update market user stats
   marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(amount);
@@ -120,7 +120,7 @@ export function handleSettleMarket(event: SettleMarket): void {
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
-    factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
+    factory.totalParticipants = factory.totalParticipants + 1;
   }
 
   //   Load asset
@@ -141,6 +141,7 @@ export function handleSettleMarket(event: SettleMarket): void {
   pool.winningPool = true;
 
   market.winningPool = poolId;
+  market.phase = 'Settled';
   market.settler = event.params.settler;
   market.creatorReward = event.params.creatorReward;
   market.platformReward = event.params.platformReward;
@@ -171,7 +172,7 @@ export function handleSettleMarket(event: SettleMarket): void {
 }
 
 export function handleDistributeMarketFee(event: DistributeMarketFee): void {
-    // Load factory
+  // Load factory
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
 
@@ -185,7 +186,7 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
-    factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
+    factory.totalParticipants = factory.totalParticipants + 1;
   }
 
   // Load market user
@@ -240,10 +241,9 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
 }
 
 export function handleClaimReturns(event: ClaimReturns): void {
-     // Load factory
+  // Load factory
   let factory = Factory.load(MARKET_FACTORY_ADDRESS);
   if (!factory) return;
-
 
   let marketId = event.params.market.toHexString();
 
@@ -252,7 +252,7 @@ export function handleClaimReturns(event: ClaimReturns): void {
   let user = User.load(userId);
   if (!user) {
     user = createUser(userId);
-    factory.totalParticipants = factory.totalParticipants.plus(ONE_BI);
+    factory.totalParticipants = factory.totalParticipants + 1;
   }
 
   // Load market user
