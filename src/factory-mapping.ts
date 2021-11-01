@@ -122,6 +122,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.token = event.params.token.toHexString();
   // Market time
   market.createdAtTimestamp = createdAt;
+  market.startTimestamp = createdAt;
   market.tradingEndTimestamp = createdAt + duration;
   market.reportingEndTimestamp = market.tradingEndTimestamp + i32Min(factory.reportingWindow, duration);
   market.waitingEndTimestamp = market.reportingEndTimestamp + i32Min(factory.waitingWindow, duration);

@@ -84,6 +84,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   pool.rewards = pool.rewards.plus(
     amount.times(BigInt.fromI32(leverage)).times(BigInt.fromI32(market.lossConstant)).div(BigInt.fromString('100'))
   );
+  pool.positions = pool.positions.plus(event.params.positions);
 
   updateAssetDayData(event, market.asset);
   updateAssetHourData(event, market.asset);
@@ -267,6 +268,7 @@ export function handleClaimReturns(event: ClaimReturns): void {
 
   marketUser.totalReturns = totalReturns;
   marketUser.returnsClaimed = true;
+  marketUser.pnl = profitLoss;
 
   user.totalReturnsClaimed = user.totalReturnsClaimed.plus(totalReturns);
   if (profitLoss.ge(ZERO_BI)) {

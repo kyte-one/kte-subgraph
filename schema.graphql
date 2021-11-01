@@ -248,6 +248,10 @@ type MarketUser @entity {
   creationRewardClaimed: Boolean!
   # Settlement reward claimed
   settlementRewardClaimed: Boolean!
+  # Total predictions
+  totalPredictions: Int!
+  # Profit and loss
+  pnl: BigInt!
   # User market predictions
   predictions: [MarketPrediction!]! @derivedFrom(field: "marketUser")
 }
@@ -287,6 +291,8 @@ type Pool @entity {
   staked: BigInt!
   # Possible rewards
   rewards: BigInt!
+  # Total positions
+  positions: BigInt!
   # Winning pool
   winningPool: Boolean!
   # Predictions for this pool
@@ -305,6 +311,8 @@ type Market @entity {
   token: MarketToken!
   # creation
   createdAtTimestamp: Int!
+  # market start timestamp
+  startTimestamp: Int!
   # trading end time
   tradingEndTimestamp: Int!
   # waiting end time
