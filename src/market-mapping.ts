@@ -68,9 +68,19 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   user.totalParticipationAmount = user.totalParticipationAmount.plus(amount);
   user.numReturnsPending = user.numReturnsPending + 1;
 
+  // Update pool stats
+  let leverageAdjustedReward = amount
+    .times(BigInt.fromI32(leverage))
+    .times(BigInt.fromI32(market.lossConstant))
+    .div(BigInt.fromString('100'));
+  pool.staked = pool.staked.plus(amount);
+  pool.rewards = pool.rewards.plus(leverageAdjustedReward);
+  pool.positions = pool.positions.plus(event.params.positions);
+
   // Update market stats
   market.totalParticipation = market.totalParticipation.plus(amount);
   market.totalPredictions = market.totalPredictions + 1;
+  market.potentialRewardPool = market.potentialRewardPool.plus(leverageAdjustedReward);
 
   // Update assets
   asset.totalParticipation = asset.totalParticipation.plus(amount);
@@ -78,13 +88,6 @@ export function handlePlacePrediction(event: PlacePrediction): void {
 
   // Update market user stats
   marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(amount);
-
-  // Update pool stats
-  pool.staked = pool.staked.plus(amount);
-  pool.rewards = pool.rewards.plus(
-    amount.times(BigInt.fromI32(leverage)).times(BigInt.fromI32(market.lossConstant)).div(BigInt.fromString('100'))
-  );
-  pool.positions = pool.positions.plus(event.params.positions);
 
   updateAssetDayData(event, market.asset);
   updateAssetHourData(event, market.asset);

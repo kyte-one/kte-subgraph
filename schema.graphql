@@ -339,6 +339,8 @@ type Market @entity {
   settlerFee: Int!
   # Platform fee in percent
   platformFee: Int!
+  # Potential reward
+  potentialRewardPool: BigInt!
   # Reward pool
   rewardPool: BigInt!
   # Market Creator rewards
