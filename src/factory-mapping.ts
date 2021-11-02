@@ -8,14 +8,14 @@ import {
   UpdateMarketDurationParams,
   UpdateMarketFeesPercentage,
   UpdateMarketWindowParams,
-  UpdateMinMarketLiquidity,
+  UpdateMinMarketLiquidity
 } from '../generated/MarketFactory/MarketFactory';
-import { Asset, Factory, Market, MarketToken, Pool, User } from '../generated/schema';
+import { Asset, Factory, Market, MarketToken, Pool, User, MarketUser } from '../generated/schema';
 import { Market as MarketTemplate } from '../generated/templates';
 import { INFINITE_BI, MARKET_FACTORY_ADDRESS, ONE_BI, ZERO_BI } from './constant';
 import { updateAssetDayData, updateAssetHourData } from './intervals/asset-interval';
 import { updateFactoryDayData, updateFactoryHourData } from './intervals/factory-interval';
-import { createUser, formatAssetFeedType, i32Min } from './utils';
+import { createMarketUser, createUser, formatAssetFeedType, i32Min } from './utils';
 
 function createAndSavePool(poolId: string, marketId: string, upper: BigInt, lower: BigInt): Pool {
   let pool = new Pool(poolId);
@@ -115,6 +115,14 @@ export function handleCreateMarket(event: CreateMarket): void {
   }
   user.totalMarketCreated = user.totalMarketCreated + 1;
 
+  // Load market user
+  let marketUserId = `${marketId}-${userId}`;
+  let marketUser = MarketUser.load(marketUserId);
+  if (!marketUser) {
+    marketUser = createMarketUser(userId, marketId);
+  }
+  marketUser.isMarketCreator = true;
+
   market.phase = 'Trading';
   market.asset = assetId;
   market.duration = duration;
@@ -148,6 +156,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   MarketTemplate.create(event.params.id);
   user.save();
   market.save();
+  marketUser.save();
   factory.save();
 }
 

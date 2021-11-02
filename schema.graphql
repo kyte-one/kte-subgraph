@@ -252,6 +252,8 @@ type MarketUser @entity {
   totalPredictions: Int!
   # Profit and loss
   pnl: BigInt!
+  # timestamp
+  timestamp: BigInt!
   # User market predictions
   predictions: [MarketPrediction!]! @derivedFrom(field: "marketUser")
 }
@@ -276,6 +278,8 @@ type MarketPrediction @entity {
   boostMode: Boolean!
   # prediction timestamp
   timestamp: BigInt!
+  # Prediction block
+  blockNumber: BigInt!
 }
 
 type Pool @entity {
@@ -321,8 +325,8 @@ type Market @entity {
   reportingEndTimestamp: Int!
   # dispute end time
   disputeEndTimestamp: Int!
-  # block number created at
-  createdAtBlockNumber: BigInt!
+  # market creation block number
+  blockNumber: BigInt!: BigInt!
   # Winning pool
   winningPool: Pool
   # Initial market liquidity
