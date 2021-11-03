@@ -266,7 +266,7 @@ type MarketUser @entity {
   totalPredictions: Int!
   # Profit and loss
   pnl: BigInt!
-  # timestamp
+  # last updated timestamp
   timestamp: Int!
   # User market predictions
   predictions: [MarketPrediction!]! @derivedFrom(field: "marketUser")

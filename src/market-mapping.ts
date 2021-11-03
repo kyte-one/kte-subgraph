@@ -90,6 +90,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   // Update market user stats
   marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(amount);
   marketUser.totalPredictions = marketUser.totalPredictions + 1;
+  marketUser.timestamp = event.block.timestamp.toI32();
 
   updateAssetDayData(event, market.asset);
   updateAssetHourData(event, market.asset);
@@ -158,6 +159,7 @@ export function handleSettleMarket(event: SettleMarket): void {
   market.usersRewardPool = event.params.usersRewardPool;
 
   marketUser.isMarketSettler = true;
+  marketUser.timestamp = event.block.timestamp.toI32();
 
   factory.totalMarketsSettled = factory.totalMarketsSettled + 1;
   factory.totalRewards = factory.totalRewards.plus(event.params.rewardPool);
@@ -244,6 +246,8 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
     user.totalPNL = user.totalPNL.plus(reward);
   }
 
+  marketUser.timestamp = event.block.timestamp.toI32();
+
   updateUserDayData(event, userId);
   updateUserMonthData(event, userId);
 
@@ -282,6 +286,7 @@ export function handleClaimReturns(event: ClaimReturns): void {
   marketUser.totalReturns = totalReturns;
   marketUser.returnsClaimed = true;
   marketUser.pnl = profitLoss;
+  marketUser.timestamp = event.block.timestamp.toI32();
 
   user.totalReturnsClaimed = user.totalReturnsClaimed.plus(totalReturns);
   if (profitLoss.ge(ZERO_BI)) {

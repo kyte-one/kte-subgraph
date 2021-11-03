@@ -123,6 +123,7 @@ export function handleCreateMarket(event: CreateMarket): void {
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
   marketUser.isMarketCreator = true;
+  marketUser.timestamp = event.block.timestamp.toI32();
 
   market.phase = 'Trading';
   market.asset = assetId;
