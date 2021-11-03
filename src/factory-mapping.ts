@@ -8,7 +8,7 @@ import {
   UpdateMarketDurationParams,
   UpdateMarketFeesPercentage,
   UpdateMarketWindowParams,
-  UpdateMinMarketLiquidity
+  UpdateMinMarketLiquidity,
 } from '../generated/MarketFactory/MarketFactory';
 import { Asset, Factory, Market, MarketToken, Pool, User, MarketUser } from '../generated/schema';
 import { Market as MarketTemplate } from '../generated/templates';
@@ -120,6 +120,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
     marketUser = createMarketUser(userId, marketId);
+    user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
   marketUser.isMarketCreator = true;
 
@@ -136,7 +137,7 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.waitingEndTimestamp = market.reportingEndTimestamp + i32Min(factory.waitingWindow, duration);
   market.disputeEndTimestamp = market.reportingEndTimestamp + factory.disputeWindow;
 
-  market.createdAtBlockNumber = event.block.number;
+  market.blockNumber = event.block.number;
   market.liquidity = event.params.liquidity;
 
   market.creationFee = factory.creatorFee;

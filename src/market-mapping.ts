@@ -39,6 +39,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   if (!marketUser) {
     market.totalParticipants = market.totalParticipants + 1;
     marketUser = createMarketUser(userId, marketId);
+    user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
 
   // Load pool
@@ -57,7 +58,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   marketPrediction.user = userId;
   marketPrediction.amount = amount;
   marketPrediction.boostMode = false;
-  marketPrediction.timestamp = event.block.timestamp;
+  marketPrediction.timestamp = event.block.timestamp.toI32();
 
   // Update factory stats
   factory.totalParticipation = factory.totalParticipation.plus(amount);
@@ -88,11 +89,14 @@ export function handlePlacePrediction(event: PlacePrediction): void {
 
   // Update market user stats
   marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(amount);
+  marketUser.totalPredictions = marketUser.totalPredictions + 1;
 
   updateAssetDayData(event, market.asset);
   updateAssetHourData(event, market.asset);
   updateFactoryHourData(event);
   updateFactoryDayData(event);
+  updateUserDayData(event, userId);
+  updateUserMonthData(event, userId);
 
   // Save changes
   marketPrediction.save();
@@ -138,6 +142,7 @@ export function handleSettleMarket(event: SettleMarket): void {
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
     marketUser = createMarketUser(userId, marketId);
+    user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
 
   user.totalSettled = user.totalSettled + 1;
@@ -198,6 +203,7 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
     marketUser = createMarketUser(userId, marketId);
+    user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
 
   // 0: Creator, 1: Settler, 2: platform
@@ -238,6 +244,9 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
     user.totalPNL = user.totalPNL.plus(reward);
   }
 
+  updateUserDayData(event, userId);
+  updateUserMonthData(event, userId);
+
   market.save();
   marketUser.save();
   user.save();
@@ -264,6 +273,7 @@ export function handleClaimReturns(event: ClaimReturns): void {
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
     marketUser = createMarketUser(userId, marketId);
+    user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
 
   let totalReturns = event.params.totalReturns;

@@ -18,6 +18,9 @@ export function updateUserDayData(event: ethereum.Event, userId: string): void {
   }
 
   userDayData.pnl = user.totalPNL;
+  userDayData.rewards = user.totalRewardsClaimed;
+  userDayData.predictions = user.totalPredictions;
+  userDayData.participation = user.totalParticipationAmount;
   userDayData.save();
 }
 
@@ -38,6 +41,9 @@ export function updateUserMonthData(event: ethereum.Event, userId: string): void
   }
 
   userMonthData.pnl = user.totalPNL;
+  userMonthData.rewards = user.totalRewardsClaimed;
+  userMonthData.predictions = user.totalPredictions;
+  userMonthData.participation = user.totalParticipationAmount;
 
   userMonthData.save();
 }

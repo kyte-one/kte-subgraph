@@ -170,6 +170,8 @@ type User @entity {
   avatar: String
   # user total market created
   totalMarketCreated: Int!
+  # user total market participated
+  totalMarketParticipated: Int!
   # user total predictions
   totalPredictions: Int!
   # total market settled by user
@@ -211,6 +213,12 @@ type UserDayData @entity {
   timestamp: Int!
   # Profit and loss
   pnl: BigInt!
+  # user predictions
+  predictions: Int!
+  # user participation
+  participation: BigInt!
+  # (correct prediction + settlement + creation)
+  rewards: BigInt!
 }
 
 type UserMonthData @entity {
@@ -222,6 +230,12 @@ type UserMonthData @entity {
   timestamp: Int!
   # Profit and loss
   pnl: BigInt!
+  # user predictions
+  predictions: Int!
+  # user participation
+  participation: BigInt!
+  # (correct prediction + settlement + creation)
+  rewards: BigInt!
 }
 
 type MarketUser @entity {
@@ -253,7 +267,7 @@ type MarketUser @entity {
   # Profit and loss
   pnl: BigInt!
   # timestamp
-  timestamp: BigInt!
+  timestamp: Int!
   # User market predictions
   predictions: [MarketPrediction!]! @derivedFrom(field: "marketUser")
 }
@@ -277,9 +291,7 @@ type MarketPrediction @entity {
   # boost mode applied
   boostMode: Boolean!
   # prediction timestamp
-  timestamp: BigInt!
-  # Prediction block
-  blockNumber: BigInt!
+  timestamp: Int!
 }
 
 type Pool @entity {
@@ -326,7 +338,7 @@ type Market @entity {
   # dispute end time
   disputeEndTimestamp: Int!
   # market creation block number
-  blockNumber: BigInt!: BigInt!
+  blockNumber: BigInt!
   # Winning pool
   winningPool: Pool
   # Initial market liquidity
