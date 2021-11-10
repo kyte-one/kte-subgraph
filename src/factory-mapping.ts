@@ -22,8 +22,6 @@ function createAndSavePool(poolId: string, marketId: string, upper: BigInt, lowe
   pool.market = marketId;
   pool.upper = upper;
   pool.lower = lower;
-  pool.staked = ZERO_BI;
-  pool.rewards = ZERO_BI;
   pool.winningPool = false;
   return pool;
 }
@@ -119,11 +117,10 @@ export function handleCreateMarket(event: CreateMarket): void {
   let marketUserId = `${marketId}-${userId}`;
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
-    marketUser = createMarketUser(userId, marketId);
+    marketUser = createMarketUser(userId, marketId, assetId);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
-  marketUser.isMarketCreator = true;
-  marketUser.timestamp = event.block.timestamp.toI32();
+  
 
   market.phase = 'Trading';
   market.asset = assetId;
@@ -134,8 +131,8 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.createdAtTimestamp = createdAt;
   market.startTimestamp = createdAt;
   market.tradingEndTimestamp = createdAt + duration;
-  market.reportingEndTimestamp = market.tradingEndTimestamp + i32Min(factory.reportingWindow, duration);
-  market.waitingEndTimestamp = market.reportingEndTimestamp + i32Min(factory.waitingWindow, duration);
+  market.waitingEndTimestamp = market.tradingEndTimestamp + i32Min(factory.waitingWindow, duration);
+  market.reportingEndTimestamp = market.waitingEndTimestamp + i32Min(factory.reportingWindow, duration);
   market.disputeEndTimestamp = market.reportingEndTimestamp + factory.disputeWindow;
 
   market.blockNumber = event.block.number;
@@ -145,6 +142,10 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.settlerFee = factory.settlerFee;
   market.platformFee = factory.platformFee;
   market.lossConstant = factory.lossConstant;
+
+  marketUser.isMarketCreator = true;
+  marketUser.timestamp = event.block.timestamp.toI32();
+  marketUser.phase = 'Trading';
 
   // Create market pools
   createPools(marketId, event.params.poolsRange);
@@ -157,8 +158,8 @@ export function handleCreateMarket(event: CreateMarket): void {
   // create the tracked contract based on the template
   MarketTemplate.create(event.params.id);
   user.save();
-  market.save();
   marketUser.save();
+  market.save();
   factory.save();
 }
 

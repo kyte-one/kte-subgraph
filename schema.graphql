@@ -127,6 +127,9 @@ type Asset @entity {
   totalRewards: BigInt!
 
   markets: [Market!]! @derivedFrom(field: "asset")
+
+  marketUsers: [MarketUser!]! @derivedFrom(field: "asset")
+  predictions: [MarketPrediction!]! @derivedFrom(field: "asset")
   # Hourly asset snapshots
   assetHourData: [AssetHourData!]! @derivedFrom(field: "asset")
   # Daily asset snapshots
@@ -244,6 +247,10 @@ type MarketUser @entity {
   user: User!
   # Market pointer
   market: Market!
+  # Asset pointer
+  asset: Asset!
+  # Market phase for filter purpose
+  phase: Phase!
   # Is user market creator
   isMarketCreator: Boolean!
   # Is user market settler
@@ -280,6 +287,8 @@ type MarketPrediction @entity {
   user: User!
   # Market pointer
   market: Market!
+  # asset pointer
+  asset: Asset!
   # Pool pointer
   pool: Pool!
   # Positions allocated
@@ -303,8 +312,10 @@ type Pool @entity {
   upper: BigInt!
   # lower part of range
   lower: BigInt!
-  # Total staked amount
-  staked: BigInt!
+  # Total participation amount
+  totalParticipation: BigInt!
+  # Total prediction
+  totalPredictions: Int!
   # Possible rewards
   rewards: BigInt!
   # Total positions

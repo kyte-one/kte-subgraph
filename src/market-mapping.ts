@@ -7,6 +7,7 @@ import { updateFactoryDayData, updateFactoryHourData } from './intervals/factory
 import { updateUserDayData, updateUserMonthData } from './intervals/user-interval';
 import { createMarketUser, createUser } from './utils';
 
+
 export function handlePlacePrediction(event: PlacePrediction): void {
   let amount = event.params.amount;
   let leverage = event.params.leverage;
@@ -37,9 +38,12 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   let marketUserId = `${marketId}-${userId}`;
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
-    market.totalParticipants = market.totalParticipants + 1;
-    marketUser = createMarketUser(userId, marketId);
+    marketUser = createMarketUser(userId, marketId, asset.id);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
+  }
+
+  if (marketUser.totalPredictions === 0) {
+    market.totalParticipants = market.totalParticipants + 1;
   }
 
   // Load pool
@@ -59,6 +63,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   marketPrediction.amount = amount;
   marketPrediction.boostMode = false;
   marketPrediction.timestamp = event.block.timestamp.toI32();
+  marketPrediction.asset = asset.id;
 
   // Update factory stats
   factory.totalParticipation = factory.totalParticipation.plus(amount);
@@ -74,9 +79,10 @@ export function handlePlacePrediction(event: PlacePrediction): void {
     .times(BigInt.fromI32(leverage))
     .times(BigInt.fromI32(market.lossConstant))
     .div(BigInt.fromString('100'));
-  pool.staked = pool.staked.plus(amount);
+  pool.totalParticipation = pool.totalParticipation.plus(amount);
   pool.rewards = pool.rewards.plus(leverageAdjustedReward);
   pool.positions = pool.positions.plus(event.params.positions);
+  pool.totalPredictions = pool.totalPredictions + 1;
 
   // Update market stats
   market.totalParticipation = market.totalParticipation.plus(amount);
@@ -91,6 +97,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(amount);
   marketUser.totalPredictions = marketUser.totalPredictions + 1;
   marketUser.timestamp = event.block.timestamp.toI32();
+  marketUser.phase = market.phase;
 
   updateAssetDayData(event, market.asset);
   updateAssetHourData(event, market.asset);
@@ -142,7 +149,7 @@ export function handleSettleMarket(event: SettleMarket): void {
   let marketUserId = `${marketId}-${userId}`;
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
-    marketUser = createMarketUser(userId, marketId);
+    marketUser = createMarketUser(userId, marketId, asset.id);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
 
@@ -157,8 +164,10 @@ export function handleSettleMarket(event: SettleMarket): void {
   market.platformReward = event.params.platformReward;
   market.settlerReward = event.params.settlerReward;
   market.usersRewardPool = event.params.usersRewardPool;
+  market.rewardPool = event.params.rewardPool;
 
   marketUser.isMarketSettler = true;
+  marketUser.phase = market.phase;
   marketUser.timestamp = event.block.timestamp.toI32();
 
   factory.totalMarketsSettled = factory.totalMarketsSettled + 1;
@@ -177,8 +186,8 @@ export function handleSettleMarket(event: SettleMarket): void {
   user.save();
   pool.save();
   asset.save();
-  marketUser.save();
   market.save();
+  marketUser.save();
   factory.save();
 }
 
@@ -204,7 +213,7 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
   let marketUserId = `${marketId}-${userId}`;
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
-    marketUser = createMarketUser(userId, marketId);
+    marketUser = createMarketUser(userId, marketId, market.asset);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
 
@@ -247,6 +256,7 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
   }
 
   marketUser.timestamp = event.block.timestamp.toI32();
+  marketUser.phase = market.phase;
 
   updateUserDayData(event, userId);
   updateUserMonthData(event, userId);
@@ -263,6 +273,8 @@ export function handleClaimReturns(event: ClaimReturns): void {
   if (!factory) return;
 
   let marketId = event.params.market.toHexString();
+  let market = Market.load(marketId);
+  if (!market) return;
 
   // Load or create new user
   let userId = event.params.user.toHexString();
@@ -276,7 +288,7 @@ export function handleClaimReturns(event: ClaimReturns): void {
   let marketUserId = `${marketId}-${userId}`;
   let marketUser = MarketUser.load(marketUserId);
   if (!marketUser) {
-    marketUser = createMarketUser(userId, marketId);
+    marketUser = createMarketUser(userId, marketId, market.asset);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
   }
 
@@ -287,6 +299,7 @@ export function handleClaimReturns(event: ClaimReturns): void {
   marketUser.returnsClaimed = true;
   marketUser.pnl = profitLoss;
   marketUser.timestamp = event.block.timestamp.toI32();
+  marketUser.phase = market.phase;
 
   user.totalReturnsClaimed = user.totalReturnsClaimed.plus(totalReturns);
   if (profitLoss.ge(ZERO_BI)) {

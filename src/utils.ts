@@ -28,10 +28,11 @@ export function createUser(userId: string): User {
   return user;
 }
 
-export function createMarketUser(userId: string, marketId: string): MarketUser {
+export function createMarketUser(userId: string, marketId: string, assetId: string): MarketUser {
   let marketUserId = `${marketId}-${userId}`;
   let marketUser = new MarketUser(marketUserId);
   marketUser.user = userId;
   marketUser.market = marketId;
+  marketUser.asset = assetId;
   return marketUser;
 }
