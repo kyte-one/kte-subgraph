@@ -7,7 +7,6 @@ import { updateFactoryDayData, updateFactoryHourData } from './intervals/factory
 import { updateUserDayData, updateUserMonthData } from './intervals/user-interval';
 import { createMarketUser, createUser } from './utils';
 
-
 export function handlePlacePrediction(event: PlacePrediction): void {
   let amount = event.params.amount;
   let leverage = event.params.leverage;
@@ -40,6 +39,10 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   if (!marketUser) {
     marketUser = createMarketUser(userId, marketId, asset.id);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
+
+    let marketUsers = market.users;
+    marketUsers.push(userId);
+    market.users = marketUsers;
   }
 
   if (marketUser.totalPredictions === 0) {
@@ -97,7 +100,6 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   marketUser.totalParticipationAmount = marketUser.totalParticipationAmount.plus(amount);
   marketUser.totalPredictions = marketUser.totalPredictions + 1;
   marketUser.timestamp = event.block.timestamp.toI32();
-  marketUser.phase = market.phase;
 
   updateAssetDayData(event, market.asset);
   updateAssetHourData(event, market.asset);
@@ -151,6 +153,10 @@ export function handleSettleMarket(event: SettleMarket): void {
   if (!marketUser) {
     marketUser = createMarketUser(userId, marketId, asset.id);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
+
+    let marketUsers = market.users;
+    marketUsers.push(userId);
+    market.users = marketUsers;
   }
 
   user.totalSettled = user.totalSettled + 1;
@@ -165,9 +171,9 @@ export function handleSettleMarket(event: SettleMarket): void {
   market.settlerReward = event.params.settlerReward;
   market.usersRewardPool = event.params.usersRewardPool;
   market.rewardPool = event.params.rewardPool;
+  market.settlementTimestamp = event.block.timestamp.toI32();
 
   marketUser.isMarketSettler = true;
-  marketUser.phase = market.phase;
   marketUser.timestamp = event.block.timestamp.toI32();
 
   factory.totalMarketsSettled = factory.totalMarketsSettled + 1;
@@ -215,6 +221,10 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
   if (!marketUser) {
     marketUser = createMarketUser(userId, marketId, market.asset);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
+
+    let marketUsers = market.users;
+    marketUsers.push(userId);
+    market.users = marketUsers;
   }
 
   // 0: Creator, 1: Settler, 2: platform
@@ -253,10 +263,10 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
   if (awardType.le(ONE_BI)) {
     user.totalRewardsClaimed = user.totalRewardsClaimed.plus(reward);
     user.totalPNL = user.totalPNL.plus(reward);
+    marketUser.pnl = marketUser.pnl.plus(reward);
   }
 
   marketUser.timestamp = event.block.timestamp.toI32();
-  marketUser.phase = market.phase;
 
   updateUserDayData(event, userId);
   updateUserMonthData(event, userId);
@@ -290,22 +300,25 @@ export function handleClaimReturns(event: ClaimReturns): void {
   if (!marketUser) {
     marketUser = createMarketUser(userId, marketId, market.asset);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
+
+    let marketUsers = market.users;
+    marketUsers.push(userId);
+    market.users = marketUsers;
   }
 
-  let totalReturns = event.params.totalReturns;
-  let profitLoss = totalReturns.minus(event.params.participationAmount);
-
-  marketUser.totalReturns = totalReturns;
+  let totalPredictionReturns = event.params.totalReturns;
+  let predictionProfitLoss = totalPredictionReturns.minus(event.params.participationAmount);
+  marketUser.totalReturns = marketUser.totalReturns.plus(totalPredictionReturns);
+  marketUser.predictionReturns = totalPredictionReturns;
   marketUser.returnsClaimed = true;
-  marketUser.pnl = profitLoss;
+  marketUser.pnl = marketUser.pnl.plus(predictionProfitLoss);
   marketUser.timestamp = event.block.timestamp.toI32();
-  marketUser.phase = market.phase;
 
-  user.totalReturnsClaimed = user.totalReturnsClaimed.plus(totalReturns);
-  if (profitLoss.ge(ZERO_BI)) {
-    user.totalRewardsClaimed = user.totalRewardsClaimed.plus(profitLoss);
+  user.totalReturnsClaimed = user.totalReturnsClaimed.plus(totalPredictionReturns);
+  if (predictionProfitLoss.ge(ZERO_BI)) {
+    user.totalRewardsClaimed = user.totalRewardsClaimed.plus(predictionProfitLoss);
   }
-  user.totalPNL = user.totalPNL.plus(profitLoss);
+  user.totalPNL = user.totalPNL.plus(predictionProfitLoss);
   if (user.numReturnsPending > 0) {
     user.numReturnsPending = user.numReturnsPending - 1;
   }

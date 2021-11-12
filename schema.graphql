@@ -249,17 +249,17 @@ type MarketUser @entity {
   market: Market!
   # Asset pointer
   asset: Asset!
-  # Market phase for filter purpose
-  phase: Phase!
   # Is user market creator
   isMarketCreator: Boolean!
   # Is user market settler
   isMarketSettler: Boolean!
-  # Total returns - Does not include creation and settlement reward
+  # Total returns : Does not include creation and settlement reward
+  predictionReturns: BigInt!
+  # Total returns : Principal - (prediction +  creation + settlement reward)
   totalReturns: BigInt!
   # Total participation amount
   totalParticipationAmount: BigInt!
-  # Returns claimed (Prediction amount +/- Prediction reward / loss)
+  # Returns claimed - Prediction
   returnsClaimed: Boolean!
   # Market Creator rewards
   creationReward: BigInt!
@@ -326,6 +326,7 @@ type Pool @entity {
   predictions: [MarketPrediction!]! @derivedFrom(field: "pool")
 }
 
+
 type Market @entity {
   id: ID!
   # Market phase
@@ -350,6 +351,8 @@ type Market @entity {
   disputeEndTimestamp: Int!
   # market creation block number
   blockNumber: BigInt!
+   # market settlement timestamp
+  settlementTimestamp: Int!
   # Winning pool
   winningPool: Pool
   # Initial market liquidity
@@ -390,7 +393,11 @@ type Market @entity {
   platformRewardClaimed: Boolean!
   # Loss constant
   lossConstant: Int!
+  # All market user ids
+  users: [String!]!
 
   pools: [Pool!]! @derivedFrom(field: "market")
   predictions: [MarketPrediction!]! @derivedFrom(field: "market")
+  marketUsers: [MarketUser!]! @derivedFrom(field: "market")
+
 }

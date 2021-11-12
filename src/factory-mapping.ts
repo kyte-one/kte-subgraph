@@ -119,9 +119,11 @@ export function handleCreateMarket(event: CreateMarket): void {
   if (!marketUser) {
     marketUser = createMarketUser(userId, marketId, assetId);
     user.totalMarketParticipated = user.totalMarketParticipated + 1;
+    let marketUsers = market.users;
+    marketUsers.push(userId);
+    market.users = marketUsers;
   }
   
-
   market.phase = 'Trading';
   market.asset = assetId;
   market.duration = duration;
@@ -142,10 +144,10 @@ export function handleCreateMarket(event: CreateMarket): void {
   market.settlerFee = factory.settlerFee;
   market.platformFee = factory.platformFee;
   market.lossConstant = factory.lossConstant;
+  
 
   marketUser.isMarketCreator = true;
   marketUser.timestamp = event.block.timestamp.toI32();
-  marketUser.phase = 'Trading';
 
   // Create market pools
   createPools(marketId, event.params.poolsRange);
