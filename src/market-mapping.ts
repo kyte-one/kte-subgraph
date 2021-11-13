@@ -47,6 +47,7 @@ export function handlePlacePrediction(event: PlacePrediction): void {
 
   if (marketUser.totalPredictions === 0) {
     market.totalParticipants = market.totalParticipants + 1;
+    user.numReturnsPending = user.numReturnsPending + 1;
   }
 
   // Load pool
@@ -75,7 +76,6 @@ export function handlePlacePrediction(event: PlacePrediction): void {
   // Update user stats
   user.totalPredictions = user.totalPredictions + 1;
   user.totalParticipationAmount = user.totalParticipationAmount.plus(amount);
-  user.numReturnsPending = user.numReturnsPending + 1;
 
   // Update pool stats
   let leverageAdjustedReward = amount
@@ -262,8 +262,10 @@ export function handleDistributeMarketFee(event: DistributeMarketFee): void {
 
   if (awardType.le(ONE_BI)) {
     user.totalRewardsClaimed = user.totalRewardsClaimed.plus(reward);
+    user.totalReturnsClaimed = user.totalReturnsClaimed.plus(reward);
     user.totalPNL = user.totalPNL.plus(reward);
     marketUser.pnl = marketUser.pnl.plus(reward);
+    marketUser.totalReturns = marketUser.totalReturns.plus(reward);
   }
 
   marketUser.timestamp = event.block.timestamp.toI32();
@@ -315,6 +317,7 @@ export function handleClaimReturns(event: ClaimReturns): void {
   marketUser.timestamp = event.block.timestamp.toI32();
 
   user.totalReturnsClaimed = user.totalReturnsClaimed.plus(totalPredictionReturns);
+  user.totalPredictionReturnsClaimed = user.totalPredictionReturnsClaimed.plus(totalPredictionReturns);
   if (predictionProfitLoss.ge(ZERO_BI)) {
     user.totalRewardsClaimed = user.totalRewardsClaimed.plus(predictionProfitLoss);
   }

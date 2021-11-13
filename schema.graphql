@@ -183,12 +183,12 @@ type User @entity {
   numReturnsPending: Int!
   # Total participation amount
   totalParticipationAmount: BigInt!
-  # Total returns claimed
+  # Total returns claimed (prediction returns + settlement reward + creation reward)
   totalReturnsClaimed: BigInt!
+    # total prediction returns claimed
+  totalPredictionReturnsClaimed: BigInt!
   # total reward claimed (correct prediction + settlement + creation)
   totalRewardsClaimed: BigInt!
-  # total prediction reward claimed
-  totalPredictionRewardClaimed: BigInt!
   # Total market creation reward
   totalMarketCreationRewardClaimed: BigInt!
   # total market settlement reward
