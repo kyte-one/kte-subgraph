@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: MarketFactory
-    network: fuji
+    network: {{network}}
     source:
-      address: '0xA1696b479B4099F73F156B7ED69656a4E4Dc7a07'
+      address: '{{address}}'
       abi: MarketFactory
-      startBlock: 2511718
+      startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -54,7 +54,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Market
-    network: fuji
+    network: {{network}}
     source:
       abi: Market
     mapping:

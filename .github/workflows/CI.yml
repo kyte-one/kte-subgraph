@@ -37,6 +37,9 @@ jobs:
             ${{ matrix.os }}-yarn-
       - name: Install dependencies
         run: yarn install
+      
+      - name: Run GraphQL Prepare
+        run: yarn prepare:fuji
 
       - name: Run GraphQL codegen
         run: yarn codegen
