@@ -1,17 +1,21 @@
-import { VestingSchedule } from '../generated/schema';
+import { User, VestingSchedule } from '../generated/schema';
 import { AddVestingSchedule } from '../generated/TokenVesting/TokenVesting';
-import { TOKEN_VESTING_ADDRESS } from './constant';
-import { log } from '@graphprotocol/graph-ts';
 
 export function handleAddVestingSchedule(event: AddVestingSchedule): void {
-  let vestingSchedule = VestingSchedule.load(TOKEN_VESTING_ADDRESS);
-  if (!vestingSchedule) {
-    vestingSchedule = new VestingSchedule(TOKEN_VESTING_ADDRESS);
+  // Create a new vesting schedule
+  let vestingScheduleId = event.params.vestingScheduleId.toHexString();
+  let vestingSchedule = new VestingSchedule(vestingScheduleId);
+
+  // Load or create new user
+  let userId = event.params.beneficiary.toHexString();
+  let user = User.load(userId);
+  if (!user) {
+    user = new User(userId);
   }
 
-  log.info('\n\n\n\n Schedule Id {}', [event.params.vestingScheduleId.toHexString()]);
-  vestingSchedule.id = event.params.vestingScheduleId.toHexString();
-  vestingSchedule.beneficiary = event.params.beneficiary;
+  vestingSchedule.id = vestingScheduleId;
+  vestingSchedule.beneficiary = userId;
+
   vestingSchedule.cliff = event.params.cliff.toI32();
   vestingSchedule.start = event.params.start.toI32();
   vestingSchedule.duration = event.params.duration.toI32();
@@ -21,5 +25,9 @@ export function handleAddVestingSchedule(event: AddVestingSchedule): void {
   vestingSchedule.released = event.params.released;
   vestingSchedule.revoked = event.params.revoked;
   vestingSchedule.upFront = event.params.upFront;
+
+  user.totalAllocation = user.totalAllocation.plus(vestingSchedule.amountTotal);
+
+  user.save();
   vestingSchedule.save();
 }

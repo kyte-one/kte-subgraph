@@ -1,78 +1,32 @@
 specVersion: 0.0.2
-description: Predictly subgraph
-repository: https://github.com/kyte-one/predictly-subgraph
+description: KTE subgraph
+repository: https://github.com/kyte-one/kte-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: MarketFactory
+    name: TokenVesting
     network: {{network}}
     source:
       address: '{{address}}'
-      abi: MarketFactory
+      abi: TokenVesting
       startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - Factory
-        - FactoryHourData
-        - FactoryDayData
-        - Asset
-        - AssetHourData
-        - AssetDayData
-        - Market
         - User
-        - MarketUser
+        - VestingSchedule
+        - Claim
       abis:
-        - name: MarketFactory
-          file: ./abis/MarketFactory.json
-        - name: Market
-          file: ./abis/Market.json
+        - name: TokenVesting
+          file: ./abis/TokenVesting.json
       eventHandlers:
-        - event: Init(address,uint256,uint256,uint256,uint24,uint24,uint24,uint256,uint256,uint256,uint8)
-          handler: handleInit
-        - event: AddAsset(indexed uint256,indexed bytes32,indexed address,uint8,uint8,address)
-          handler: handleAddAsset
-        - event: CreateMarket(indexed address,indexed uint256,uint256,uint256,uint256[],uint256,address,address)
-          handler: handleCreateMarket
-        - event: AddMarketToken(indexed address)
-          handler: handleAddMarketToken
-        - event: UpdateMinMarketLiquidity(uint256)
-          handler: handleUpdateMinMarketLiquidity
-        - event: UpdateLossConstant(uint8)
-          handler: handleUpdateLossConstant
-        - event: UpdateMarketWindowParams(uint256,uint256,uint256)
-          handler: handleUpdateMarketWindowParams
-        - event: UpdateMarketDurationParams(uint256,uint256)
-          handler: handleUpdateMarketDurationParams
-        - event: UpdateMarketFeesPercentage(uint24,uint24,uint24)
-          handler: handleUpdateMarketFeesPercentage
-      file: ./src/factory-mapping.ts
-
-templates:
-  - kind: ethereum/contract
-    name: Market
-    network: {{network}}
-    source:
-      abi: Market
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      file: ./src/market-mapping.ts
-      entities:
-        - Market
-      abis:
-        - name: Market
-          file: ./abis/Market.json
-      eventHandlers:
-        - event: PlacePrediction(indexed address,indexed bytes32,indexed address,uint8,uint256,uint8,uint256,uint256,address)
-          handler: handlePlacePrediction
-        - event: SettleMarket(indexed address,indexed address,indexed uint256,uint8,uint256,uint256,uint256,uint256,uint256)
-          handler: handleSettleMarket
-        - event: DistributeMarketFee(indexed address,indexed address,uint8,uint256)
-          handler: handleDistributeMarketFee
-        - event: ClaimReturns(indexed address,indexed address,uint256,uint256)
-          handler: handleClaimReturns
+        - event: AddVestingSchedule(bytes32,address,uint256,uint256,uint256,uint256,bool,uint256,uint256,bool,uint256)
+          handler: handleAddVestingSchedule
+        - event: ReleaseVestedToken(bytes32,address,uint256)
+          handler: handleReleaseVestedToken
+        - event: RevokeVestingShedule(bytes32)
+          handler: handleRevokeVestingSchedule
+      file: ./src/vesting-mapping.ts

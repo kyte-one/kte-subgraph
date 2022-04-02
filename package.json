@@ -1,13 +1,13 @@
 {
-  "name": "predictly-one-subgraph",
+  "name": "kte-subgraph",
   "version": "0.1.0",
   "scripts": {
-    "create": "graph create kyte-one/predictly-subgraph --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create kyte-one/predictly-subgraph --node http://127.0.0.1:8020",
+    "create": "graph create kyte-one/kte-subgraph --node https://api.thegraph.com/deploy/",
+    "create-local": "graph create kyte-one/kte-subgraph --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy kyte-one/predictly-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy kyte-one/predictly-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "deploy": "graph deploy kyte-one/kte-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-local": "graph deploy kyte-one/kte-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "format": "prettier --config ./.prettierrc --write '**/*.{js,ts,tsx,scss,css,md,json,graphql}'",
     "prepare:local": "mustache config/local.json subgraph.template.yaml > subgraph.yaml",
     "prepare:fuji":  "mustache config/fuji.json subgraph.template.yaml > subgraph.yaml"

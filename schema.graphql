@@ -1,7 +1,22 @@
+type User @entity{
+# wallet address
+id: ID!
+# vesting schedules
+vestingSchedules: [VestingSchedule!]! @derivedFrom(field: "beneficiary")
+# claims
+claims: [Claim!]! @derivedFrom(field: "beneficiary")
+#  sum of all vesting schedule amounts
+totalAllocation: BigInt!,
+#  sum of all upfront releases and token claim amounts
+totalReleased: BigInt!,
+
+}
+
 type VestingSchedule @entity {
+  
+  # vesting schedule Id
   id: ID!
-  vestingScheduleId: Bytes!,
-  beneficiary: Bytes!,
+  beneficiary: User!,
   cliff: Int!,
   start: Int!,
   duration: Int!,
@@ -11,4 +26,18 @@ type VestingSchedule @entity {
   released: BigInt!,
   revoked: Boolean!,
   upFront: BigInt!
+}
+
+enum ClaimType {
+  UpFront
+  PostVesting
+}
+
+type Claim @entity {
+id: ID!
+amount: BigInt!,
+vestingSchedule: VestingSchedule!
+beneficiary: User!,
+# Claim type
+  claimType: ClaimType!
 }
