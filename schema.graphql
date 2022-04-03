@@ -34,10 +34,11 @@ enum ClaimType {
 }
 
 type Claim @entity {
-id: ID!
-amount: BigInt!,
-vestingSchedule: VestingSchedule!
-beneficiary: User!,
-# Claim type
-  claimType: ClaimType!
+  id: ID!
+  amount: BigInt!,
+  vestingSchedule: VestingSchedule!
+  beneficiary: User!,
+  # Claim type
+  claimType: ClaimType!,
+  timestamp: Int!
 }
