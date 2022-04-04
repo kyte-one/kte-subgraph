@@ -25,8 +25,8 @@ dataSources:
       eventHandlers:
         - event: AddVestingSchedule(bytes32,address,uint256,uint256,uint256,uint256,bool,uint256,uint256,bool,uint256)
           handler: handleAddVestingSchedule
-        - event: ReleaseVestedToken(bytes32,address,uint256)
+        - event: ReleaseVestedToken(bytes32,address,uint256,uint256)
           handler: handleReleaseVestedToken
-        - event: RevokeVestingShedule(bytes32)
-          handler: handleRevokeVestingSchedule
+        - event: UpfrontTokenTransfer(bytes32,address,uint256)
+          handler: handleUpfrontTokenTransfer
       file: ./src/vesting-mapping.ts
