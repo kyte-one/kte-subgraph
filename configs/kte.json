@@ -1,0 +1,12 @@
+{
+  "output": "kte.",
+  "datasources": [
+    {
+      "module": [
+        "accesscontrol",
+        "ownable",
+        "pausable"
+      ]
+    }
+  ]
+}
