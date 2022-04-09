@@ -1,6 +1,6 @@
 specVersion: 0.0.2
-description: KTE subgraph
-repository: https://github.com/kyte-one/kte-subgraph
+description: Test subgraph
+repository: https://github.com/johngitdoe/muiz
 schema:
   file: ./schema.graphql
 dataSources:

@@ -1,16 +1,16 @@
 specVersion: 0.0.2
-description: KTE subgraph
-repository: https://github.com/kyte-one/kte-subgraph
+description: Test subgraph
+repository: https://github.com/johngitdoe/muiz
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: TokenVesting
-    network: mainnet
+    network: fuji
     source:
-      address: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
+      address: '0x8381Bd6b7B541E17f472D0D57712C8f34CF34e39'
       abi: TokenVesting
-      startBlock: 0
+      startBlock: 8194846
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
