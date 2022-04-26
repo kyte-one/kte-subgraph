@@ -56,6 +56,7 @@ export function handleReleaseVestedToken(event: ReleaseVestedToken): void {
   vestingSchedule.released = vestingSchedule.released.plus(amount);
   user.totalReleased = user.totalReleased.plus(amount);
 
+
   user.save();
   vestingSchedule.save();
   claim.save();
@@ -109,7 +110,7 @@ export function handleRevokeVestingSchedule(event: RevokeVestingSchedule): void 
   // Load User
   const user = User.load(vesting.beneficiary);
   if (user) {
-    user.totalAllocation.minus(vesting.amountTotal);
+    user.totalAllocation.minus(vesting.amountTotal.minus(vesting.released));
     user.save();
   }
 
