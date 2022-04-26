@@ -1,5 +1,5 @@
 {
-  "network": "fuji",
-  "address": "0x056D114fF1e01dE3BCA30F0Efa3655DF42880e5B",
-  "startBlock": 13150394
+  "network": "avalanche",
+  "address": "0xb5a15628856a0a94ba28c5c9871b5ebf0e173222",
+  "startBlock": 13615289
 }

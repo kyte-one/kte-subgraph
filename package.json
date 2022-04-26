@@ -5,12 +5,13 @@
     "create": "graph create kyte-one/kte-subgraph --node https://api.thegraph.com/deploy/",
     "create:local": "graph create kyte-one/kte-subgraph --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
-    "deploy": "graph deploy kyte-one/kte-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy": "graph deploy kyte-one/kte-vesting-bsc --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy:local": "graph deploy kyte-one/kte-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "format": "prettier --config ./.prettierrc --write '**/*.{js,ts,tsx,scss,css,md,json,graphql}'",
     "prepare:local": "mustache config/local.json subgraph.template.yaml > subgraph.yaml",
     "prepare:fuji": "mustache config/fuji.json subgraph.template.yaml > subgraph.yaml",
     "prepare:avalanche": "mustache config/avalanche.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:bsc": "mustache config/bsc.json subgraph.template.yaml > subgraph.yaml",
     "kte:prepare:fuji": "mustache config/fuji.json kte.subgraph.template.yaml > kte.subgraph.yaml"
   },
   "devDependencies": {
