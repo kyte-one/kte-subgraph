@@ -1,29 +1,70 @@
 specVersion: 0.0.2
-description: Predictly subgraph
-repository: https://github.com/kyte-one/predictly-subgraph
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: TokenVesting
-    network: mainnet
+    name: accesscontrol
+    network: avalanche
     source:
-      address: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
-      abi: TokenVesting
+      address: '0x056D114fF1e01dE3BCA30F0Efa3655DF42880e5B'
+      abi: AccessControl
+      startBlock: 13150394
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - VestingSchedule
+        - AccessControl
       abis:
-        - name: TokenVesting
-          file: ./abis/TokenVesting.json
+        - name: AccessControl
+          file: node_modules/@openzeppelin/contracts/build/contracts/IAccessControl.json
       eventHandlers:
-        - event: AddVestingSchedule(bytes32,address,uint256,uint256,uint256,uint256,bool,uint256,uint256,bool,uint256)
-          handler: handleAddVestingSchedule
-        - event: ReleaseVestedToken(bytes32,address,uint256)
-          handler: handleReleaseVestedToken
-        - event: RevokeVestingShedule(bytes32)
-          handler: handleRevokeVestingSchedule
-      file: ./src/vesting-mapping.ts
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: node_modules/@openzeppelin/subgraphs/src/datasources/accesscontrol.ts
+  - kind: ethereum/contract
+    name: ownable
+    network: avalanche
+    source:
+      address: '0x056D114fF1e01dE3BCA30F0Efa3655DF42880e5B'
+      abi: Ownable
+      startBlock: 13150394
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Ownable
+      abis:
+        - name: Ownable
+          file: node_modules/@openzeppelin/contracts/build/contracts/Ownable.json
+      eventHandlers:
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: node_modules/@openzeppelin/subgraphs/src/datasources/ownable.ts
+  - kind: ethereum/contract
+    name: pausable
+    network: avalanche
+    source:
+      address: '0x056D114fF1e01dE3BCA30F0Efa3655DF42880e5B'
+      abi: Pausable
+      startBlock: 13150394
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Pausable
+      abis:
+        - name: Pausable
+          file: node_modules/@openzeppelin/contracts/build/contracts/Pausable.json
+      eventHandlers:
+        - event: Paused(address)
+          handler: handlePaused
+        - event: Unpaused(address)
+          handler: handleUnpaused
+      file: node_modules/@openzeppelin/subgraphs/src/datasources/pausable.ts

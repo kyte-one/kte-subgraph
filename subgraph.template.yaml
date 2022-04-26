@@ -1,78 +1,70 @@
 specVersion: 0.0.2
-description: Predictly subgraph
-repository: https://github.com/kyte-one/predictly-subgraph
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: MarketFactory
+    name: accesscontrol
     network: {{network}}
     source:
       address: '{{address}}'
-      abi: MarketFactory
+      abi: AccessControl
       startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - Factory
-        - FactoryHourData
-        - FactoryDayData
-        - Asset
-        - AssetHourData
-        - AssetDayData
-        - Market
-        - User
-        - MarketUser
+        - AccessControl
       abis:
-        - name: MarketFactory
-          file: ./abis/MarketFactory.json
-        - name: Market
-          file: ./abis/Market.json
+        - name: AccessControl
+          file: node_modules/@openzeppelin/contracts/build/contracts/IAccessControl.json
       eventHandlers:
-        - event: Init(address,uint256,uint256,uint256,uint24,uint24,uint24,uint256,uint256,uint256,uint8)
-          handler: handleInit
-        - event: AddAsset(indexed uint256,indexed bytes32,indexed address,uint8,uint8,address)
-          handler: handleAddAsset
-        - event: CreateMarket(indexed address,indexed uint256,uint256,uint256,uint256[],uint256,address,address)
-          handler: handleCreateMarket
-        - event: AddMarketToken(indexed address)
-          handler: handleAddMarketToken
-        - event: UpdateMinMarketLiquidity(uint256)
-          handler: handleUpdateMinMarketLiquidity
-        - event: UpdateLossConstant(uint8)
-          handler: handleUpdateLossConstant
-        - event: UpdateMarketWindowParams(uint256,uint256,uint256)
-          handler: handleUpdateMarketWindowParams
-        - event: UpdateMarketDurationParams(uint256,uint256)
-          handler: handleUpdateMarketDurationParams
-        - event: UpdateMarketFeesPercentage(uint24,uint24,uint24)
-          handler: handleUpdateMarketFeesPercentage
-      file: ./src/factory-mapping.ts
-
-templates:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: node_modules/@openzeppelin/subgraphs/src/datasources/accesscontrol.ts
   - kind: ethereum/contract
-    name: Market
+    name: ownable
     network: {{network}}
     source:
-      abi: Market
+      address: '{{address}}'
+      abi: Ownable
+      startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
-      file: ./src/market-mapping.ts
       entities:
-        - Market
+        - Ownable
       abis:
-        - name: Market
-          file: ./abis/Market.json
+        - name: Ownable
+          file: node_modules/@openzeppelin/contracts/build/contracts/Ownable.json
       eventHandlers:
-        - event: PlacePrediction(indexed address,indexed bytes32,indexed address,uint8,uint256,uint8,uint256,uint256,address)
-          handler: handlePlacePrediction
-        - event: SettleMarket(indexed address,indexed address,indexed uint256,uint8,uint256,uint256,uint256,uint256,uint256)
-          handler: handleSettleMarket
-        - event: DistributeMarketFee(indexed address,indexed address,uint8,uint256)
-          handler: handleDistributeMarketFee
-        - event: ClaimReturns(indexed address,indexed address,uint256,uint256)
-          handler: handleClaimReturns
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: node_modules/@openzeppelin/subgraphs/src/datasources/ownable.ts
+  - kind: ethereum/contract
+    name: pausable
+    network: {{network}}
+    source:
+      address: '{{address}}'
+      abi: Pausable
+      startBlock: {{startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Pausable
+      abis:
+        - name: Pausable
+          file: node_modules/@openzeppelin/contracts/build/contracts/Pausable.json
+      eventHandlers:
+        - event: Paused(address)
+          handler: handlePaused
+        - event: Unpaused(address)
+          handler: handleUnpaused
+      file: node_modules/@openzeppelin/subgraphs/src/datasources/pausable.ts

@@ -1,14 +1,106 @@
-type VestingSchedule @entity {
-  id: ID!
-  vestingScheduleId: Bytes!,
-  beneficiary: Bytes!,
-  cliff: Int!,
-  start: Int!,
-  duration: Int!,
-  slicePeriodSeconds: Int!,
-  revocable: Boolean!,
-  amountTotal: BigInt!,
-  released: BigInt!,
-  revoked: Boolean!,
-  upFront: BigInt!
+type Account @entity {
+	id: ID!
+	asAccessControl: AccessControl
+	membership: [AccessControlRoleMember!]! @derivedFrom(field: "account")
+	roleGranted: [RoleGranted!]! @derivedFrom(field: "account")
+	roleGrantedSender: [RoleGranted!]! @derivedFrom(field: "sender")
+	roleRevoked: [RoleRevoked!]! @derivedFrom(field: "account")
+	roleRevokedSender: [RoleRevoked!]! @derivedFrom(field: "sender")
+	asOwnable: Ownable
+	ownerOf: [Ownable!]! @derivedFrom(field: "owner")
+	ownershipTransferred: [OwnershipTransferred!]! @derivedFrom(field: "owner")
+	asPausable: Pausable
+	events: [Event!]! @derivedFrom(field: "emitter")
+}
+type AccessControl @entity {
+	id: ID!
+	asAccount: Account!
+	roles: [AccessControlRole!]! @derivedFrom(field: "contract")
+}
+type Role @entity {
+	id: ID!
+	roleOf: [AccessControlRole!]! @derivedFrom(field: "role")
+}
+type AccessControlRole @entity {
+	id: ID!
+	contract: AccessControl!
+	role: Role!
+	admin: AccessControlRole!
+	adminOf: [AccessControlRole!]! @derivedFrom(field: "admin")
+	members: [AccessControlRoleMember!]! @derivedFrom(field: "accesscontrolrole")
+	roleGranted: [RoleGranted!]! @derivedFrom(field: "role")
+	roleRevoked: [RoleRevoked!]! @derivedFrom(field: "role")
+	roleAdminChanged: [RoleAdminChanged!]! @derivedFrom(field: "role")
+}
+type AccessControlRoleMember @entity {
+	id: ID!
+	accesscontrolrole: AccessControlRole!
+	account: Account!
+}
+type RoleAdminChanged implements Event @entity {
+	id: ID!
+	emitter: Account!
+	transaction: Transaction!
+	timestamp: BigInt!
+	role: AccessControlRole!
+	newAdminRole: AccessControlRole!
+	previousAdminRole: AccessControlRole!
+}
+type RoleGranted implements Event @entity {
+	id: ID!
+	emitter: Account!
+	transaction: Transaction!
+	timestamp: BigInt!
+	role: AccessControlRole!
+	account: Account!
+	sender: Account!
+}
+type RoleRevoked implements Event @entity {
+	id: ID!
+	emitter: Account!
+	transaction: Transaction!
+	timestamp: BigInt!
+	role: AccessControlRole!
+	account: Account!
+	sender: Account!
+}
+type Ownable @entity {
+	id: ID!
+	asAccount: Account!
+	owner: Account!
+	ownershipTransferred: [OwnershipTransferred!]! @derivedFrom(field: "contract")
+}
+type OwnershipTransferred implements Event @entity {
+	id: ID!
+	emitter: Account!
+	transaction: Transaction!
+	timestamp: BigInt!
+	contract: Ownable!
+	owner: Account!
+}
+type Pausable @entity {
+	id: ID!
+	asAccount: Account!
+	isPaused: Boolean!
+	paused: [Paused!]! @derivedFrom(field: "contract")
+}
+type Paused implements Event @entity {
+	id: ID!
+	emitter: Account!
+	transaction: Transaction!
+	timestamp: BigInt!
+	contract: Pausable!
+	isPaused: Boolean!
+}
+interface Event {
+	id: ID!
+	transaction: Transaction!
+	emitter: Account!
+	timestamp: BigInt!
+}
+type Transaction @entity {
+	id: ID!
+	timestamp: BigInt!
+	blockNumber: BigInt!
+	events: [Event!]! @derivedFrom(field: "transaction")
 }
