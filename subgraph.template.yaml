@@ -29,4 +29,6 @@ dataSources:
           handler: handleReleaseVestedToken
         - event: UpfrontTokenTransfer(bytes32,address,uint256)
           handler: handleUpfrontTokenTransfer
+        - event: RevokeVestingShedule(bytes32)
+          handler: handleRevokeVestingSchedule
       file: ./src/vesting-mapping.ts

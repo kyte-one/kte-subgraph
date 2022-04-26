@@ -1,5 +1,5 @@
 import { Claim, User, VestingSchedule } from '../generated/schema';
-import { AddVestingSchedule, ReleaseVestedToken, UpfrontTokenTransfer } from '../generated/TokenVesting/TokenVesting';
+import { AddVestingSchedule, ReleaseVestedToken, UpfrontTokenTransfer, RevokeVestingShedule as RevokeVestingSchedule } from '../generated/TokenVesting/TokenVesting';
 
 export function handleAddVestingSchedule(event: AddVestingSchedule): void {
   // Create a new vesting schedule
@@ -93,4 +93,25 @@ export function handleUpfrontTokenTransfer(event: UpfrontTokenTransfer): void {
   user.save();
   vesting.save();
   claim.save();
+}
+
+export function handleRevokeVestingSchedule(event: RevokeVestingSchedule): void {
+  let vestingScheduleId = event.params.vestingScheduleId.toHexString();
+  
+  // Load vesting
+  let vesting = VestingSchedule.load(vestingScheduleId);
+  if (!vesting) {
+    return;
+  }
+
+  vesting.revoked = true;
+
+  // Load User
+  const user = User.load(vesting.beneficiary);
+  if (user) {
+    user.totalAllocation.minus(vesting.amountTotal);
+    user.save();
+  }
+
+  vesting.save();
 }
